@@ -1,0 +1,16 @@
+rpmbuild
+deb/_build
+*.deb
+*.rpm
+*.tar.gz
+*.tar.xz
+*.dsc
+*.changes
+*.buildinfo
+deb/LISENCE
+deb/kubescape
+deb/debian/kubescape*
+deb/debian/debhelper-build-stamp
+deb/debian/files
+deb/debian/.debhelper
+*.upload

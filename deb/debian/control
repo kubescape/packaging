@@ -1,0 +1,11 @@
+Source: kubescape
+Section: Development
+Priority: optional
+Maintainer: Hollow Man (Domain Address) <hollowman@opensuse.org>
+Build-Depends: debhelper
+Standards-Version: 2.1.3
+Homepage: https://github.com/kubescape/kubescape
+
+Package: kubescape
+Architecture: amd64
+Description: Kubescape is an open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters. It includes risk analysis, security, compliance, and misconfiguration scanning, saving Kubernetes users and administrators precious time, effort, and resources.
