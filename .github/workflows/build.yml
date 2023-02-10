@@ -1,0 +1,52 @@
+name: Build deb or rpm packages
+
+on:
+  workflow_dispatch:  # Allow manual triggers
+  push:
+    branches: [ main ]
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  debian:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y debhelper
+      - name: Build
+        run: |
+          make deb
+          mkdir upload
+          mv kubescape_*.dsc upload
+          mv kubescape_*.tar.xz upload
+          mv kubescape_*.deb upload
+      - name: Upload Debian Package Files to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kubescape_debian
+          path: upload/*
+  rpm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y rpm
+      - name: Build
+        run: make rpm
+      - name: Upload RPM Package File to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kubescape_rpm
+          path: rpmbuild/RPMS/*
