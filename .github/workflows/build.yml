@@ -63,7 +63,7 @@ jobs:
           sudo apt-get install -y binfmt-support qemu-user-static
           sudo docker run --platform linux/arm64 -v ${PWD}:/work -w /work -d --name debbuild golang:${{ env.GO_VERSION }}-bullseye sleep 21600
           sudo docker exec debbuild apt update
-          sudo docker exec debbuild apt install -y debhelper golang cmake autopkgtest
+          sudo docker exec debbuild apt install -y debhelper golang cmake autopkgtest sudo
       - name: Build
         run: |
           sudo docker exec debbuild make deb

@@ -46,12 +46,11 @@ debprepare:
 		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
 deb: debprepare
-	cd deb; dpkg-buildpackage -F; autopkgtest . -- null;
+	cd deb; dpkg-buildpackage -F; sudo dpkg -i ../kubescape_*.deb; autopkgtest . -- null;
 
 ppa: clean debprepare
 	cd deb; \
 		dpkg-buildpackage -S;
-		autopkgtest . -- null;
 	dput $(NAME) *source.changes
 
 rpm:
