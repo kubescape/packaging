@@ -15,7 +15,6 @@ ifndef LIBGIT2_VERSION
 	LIBGIT2_VERSION = $(shell cat kubescape.spec | grep "global libgit2_version" | cut -d' ' -f3)
 endif
 
-
 clean:
 	-rm -fR rpmbuild
 	-rm -fR *.deb
@@ -25,13 +24,13 @@ clean:
 	-rm -fR *.dsc
 	-rm -fR *.changes
 	-rm -fR *.buildinfo
-	-rm -fR deb/LISENCE
 	-rm -fR deb/kubescape
 	-rm -fR deb/debian/kubescape*
 	-rm -fR deb/debian/debhelper-build-stamp
 	-rm -fR deb/debian/files
 	-rm -fR deb/debian/.debhelper
 	-rm -fR *.upload
+	cd binary; make clean-all
 
 debprepare:
 	rm -rf deb/kubescape

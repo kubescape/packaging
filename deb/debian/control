@@ -1,5 +1,4 @@
 Source: kubescape
-Section: Development
 Priority: optional
 Maintainer: Hollow Man (Domain Address) <hollowman@opensuse.org>
 Build-Depends: golang, cmake, pkg-config, debhelper (>= 10)
