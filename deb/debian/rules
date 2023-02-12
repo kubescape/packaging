@@ -1,4 +1,15 @@
 #!/usr/bin/make -f
+
+export CGO_ENABLED=1
+export GOCACHE=$(PWD)/../cache
+
+ifndef VERSION
+	VERSION = $(shell cat debian/control | grep Standards-Version | cut -d' ' -f2)
+endif
+
 %:
 	dh $@
-override_dh_usrlocal:
+
+build:
+	cd kubescape/git2go; make install-static
+	cd kubescape; go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/kubescape/v2/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o kubescape

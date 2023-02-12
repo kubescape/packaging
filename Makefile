@@ -7,12 +7,20 @@ ifndef VERSION
 	VERSION = $(shell cat deb/debian/control | grep Standards-Version | cut -d' ' -f2)
 endif
 
+ifndef GIT2GO_VERSION
+	GIT2GO_VERSION = $(shell cat kubescape.spec | grep "global git2go_version" | cut -d' ' -f3)
+endif
+
+ifndef LIBGIT2_VERSION
+	LIBGIT2_VERSION = $(shell cat kubescape.spec | grep "global libgit2_version" | cut -d' ' -f3)
+endif
+
+
 clean:
-	-rm -fR deb/_build
 	-rm -fR rpmbuild
 	-rm -fR *.deb
 	-rm -fR *.rpm
-	-rm -fR *.tar.gz
+	-rm -fR *.src.tar.gz
 	-rm -fR *.tar.xz
 	-rm -fR *.dsc
 	-rm -fR *.changes
@@ -26,17 +34,24 @@ clean:
 	-rm -fR *.upload
 
 debprepare:
-	curl --output src.tar.gz -L https://github.com/kubescape/kubescape/releases/download/v$(VERSION)/kubescape-ubuntu-latest.tar.gz
-	mkdir -p deb/_build
-	cd deb/_build; tar -xf ../../src.tar.gz; rm LICENSE
-	rm -f src.tar.gz
+	rm -rf deb/kubescape
+	curl --output kubescape.src.tar.gz -L https://github.com/kubescape/kubescape/archive/v$(VERSION)/kubescape-$(VERSION).tar.gz
+	curl --output git2go.src.tar.gz -L https://github.com/libgit2/git2go/archive/v$(GIT2GO_VERSION)/git2go-$(GIT2GO_VERSION).tar.gz
+	curl --output libgit2.src.tar.gz -L https://github.com/libgit2/libgit2/archive/v$(LIBGIT2_VERSION)/libgit2-$(LIBGIT2_VERSION).tar.gz
+	cd deb; tar -xf ../kubescape.src.tar.gz
+	mv deb/kubescape-$(VERSION) deb/kubescape
+	cd deb/kubescape; tar -xf ../../git2go.src.tar.gz; \
+		rm -rf git2go; mv git2go-$(GIT2GO_VERSION) git2go
+	cd deb/kubescape/git2go/vendor; tar -xf ../../../../libgit2.src.tar.gz; \
+		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
 deb: debprepare
-	cd deb; dpkg-buildpackage -F
+	cd deb; dpkg-buildpackage -F; autopkgtest . -- null;
 
 ppa: clean debprepare
 	cd deb; \
 		dpkg-buildpackage -S;
+		autopkgtest . -- null;
 	dput $(NAME) *source.changes
 
 rpm:

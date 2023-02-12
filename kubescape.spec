@@ -50,7 +50,7 @@ rm -rf git2go/vendor/libgit2 && mv libgit2-%{libgit2_version} git2go/vendor/libg
 export CGO_ENABLED=1
 export GOCACHE=${PWD}/../../../cache
 cd git2go && make install-static && cd ..
-go build -buildmode=pie -ldflags="-buildvcs=false -s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
 
 %install
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
