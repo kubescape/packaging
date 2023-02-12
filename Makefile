@@ -50,7 +50,7 @@ deb: debprepare
 ppa: clean debprepare
 	cd deb; \
 		dpkg-buildpackage -S;
-	dput $(NAME) *source.changes
+	dput kubescape *source.changes
 
 rpm:
 	mkdir -p rpmbuild/BUILD

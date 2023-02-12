@@ -23,6 +23,7 @@ Version:        2.1.3
 Release:        0
 Summary:        Kubescape CLI interface
 License:        Apache-2.0
+Group:          Development/Tools/Other
 URL:            https://github.com/kubescape/%{name}
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/libgit2/git2go/archive/v%{git2go_version}/git2go-%{git2go_version}.tar.gz

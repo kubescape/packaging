@@ -1,7 +1,8 @@
 Source: kubescape
+Section: devel
 Priority: optional
 Maintainer: Hollow Man (Domain Address) <hollowman@opensuse.org>
-Build-Depends: golang, cmake, pkg-config, debhelper (>= 10)
+Build-Depends: golang, cmake, pkg-config, debhelper
 Standards-Version: 2.1.3
 Homepage: https://github.com/kubescape/kubescape
 Testsuite: autopkgtest

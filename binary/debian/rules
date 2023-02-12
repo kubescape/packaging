@@ -13,4 +13,4 @@ ARCH = $(shell uname -m)
 	dh $@
 
 build:
-	mv kubescape/$(ARCH)/kubescape kubescape
+	cp kubescape/$(ARCH)/kubescape kubescape
