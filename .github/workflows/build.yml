@@ -17,10 +17,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: cache
+          key: deb-amd64-go-${{ hashFiles('**/*.spec') }}
+          restore-keys: deb-amd64-go-
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y debhelper
+          sudo apt install -y debhelper golang cmake autopkgtest
       - name: Build
         run: |
           make deb
@@ -31,7 +37,37 @@ jobs:
       - name: Upload Debian Package Files to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: kubescape_debian
+          name: kubescape_debian_amd64
+          path: upload/*
+  debian-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: cache
+          key: deb-arm64-go-${{ hashFiles('**/*.spec') }}
+          restore-keys: deb-arm64-go-
+      - name: Start packaging environment in container
+        run: |
+          sudo apt-get install -y binfmt-support qemu-user-static
+          sudo docker run --platform linux/arm64 -v ${PWD}:/work -w /work -d --name debbuild ubuntu sleep 21600
+          sudo docker exec debbuild apt update
+          sudo docker exec debbuild apt install -y debhelper golang cmake autopkgtest
+      - name: Build
+        run: |
+          sudo docker exec debbuild make deb
+          mkdir upload
+          mv kubescape_*.dsc upload
+          mv kubescape_*.tar.xz upload
+          mv kubescape_*.deb upload
+      - name: Upload Debian Package Files to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kubescape_debian_arm64
           path: upload/*
   rpm:
     runs-on: ubuntu-latest
@@ -47,8 +83,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: cache
-          key: ${{ matrix.platform }}-go-${{ hashFiles('**/*.spec') }}
-          restore-keys: ${{ matrix.platform }}-go-
+          key: rpm-${{ matrix.platform }}-go-${{ hashFiles('**/*.spec') }}
+          restore-keys: rpm-${{ matrix.platform }}-go-
       - name: Start packaging environment in container
         run: |
           sudo apt-get install -y binfmt-support qemu-user-static
