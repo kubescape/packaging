@@ -16,15 +16,22 @@
 #
 
 
-%global forgeurl https://github.com/kubescape/kubescape
+%global git2go_version 33.0.9
+%global libgit2_version 1.3.0
 Name:           kubescape
 Version:        2.1.3
 Release:        0
 Summary:        Kubescape CLI interface
 License:        Apache-2.0
-URL:            %{forgeurl}
-Source0:        %{forgeurl}/releases/download/v%{version}/kubescape-ubuntu-latest.tar.gz
-BuildArch:      x86_64
+Group:          Development/Tools
+URL:            https://github.com/kubescape/%{name}
+Source0:        %{url}/archive/v%{version}.tar.gz
+Source1:        https://github.com/libgit2/git2go/archive/refs/tags/v%{git2go_version}.tar.gz
+Source2:        https://github.com/libgit2/libgit2/archive/refs/tags/v%{libgit2_version}.tar.gz
+BuildRequires:  golang
+BuildRequires:  pkg-config
+BuildRequires:  cmake
+Provides:       %{name} = %{version}
 
 %description
 Kubescape is an open-source Kubernetes security platform for your IDE, CI/CD
@@ -33,11 +40,23 @@ misconfiguration scanning, saving Kubernetes users and administrators precious
 time, effort, and resources.
 
 %prep
-%setup -c
+%setup -q -n %{name}-%{version}
+%setup -q -T -D -a 1
+%setup -q -T -D -a 2
+rm -rf git2go && mv git2go-%{git2go_version} git2go
+rm -rf git2go/vendor/libgit2 && mv libgit2-%{libgit2_version} git2go/vendor/libgit2
+
+%build
+export CGO_ENABLED=1
+export GOCACHE=${PWD}/../../../cache
+cd git2go && make install-static && cd ..
+go build -buildmode=pie -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-mv %{name} %{buildroot}%{_bindir}/%{name}
+install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
+
+%check
+if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%{version} [git enabled in build: true]" ]; then exit 1; fi
 
 %files
 %{_bindir}/%{name}

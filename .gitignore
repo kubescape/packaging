@@ -1,3 +1,4 @@
+cache
 rpmbuild
 deb/_build
 *.deb

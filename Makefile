@@ -45,4 +45,4 @@ rpm:
 	mkdir -p rpmbuild/SOURCES
 	mkdir -p rpmbuild/SPECS
 	mkdir -p rpmbuild/SRPMS
-	rpmbuild --undefine=_disable_source_fetch -ba kubescape.spec -D "_topdir $(PWD)/rpmbuild"
+	rpmbuild --undefine=_disable_source_fetch -ba kubescape.spec -D "_topdir $(PWD)/rpmbuild" -D 'debug_package %{nil}'

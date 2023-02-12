@@ -35,18 +35,30 @@ jobs:
           path: upload/*
   rpm:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [amd64, arm64]
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
-      - name: Install Dependencies
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: cache
+          key: ${{ matrix.platform }}-go-${{ hashFiles('**/*.spec') }}
+          restore-keys: ${{ matrix.platform }}-go-
+      - name: Start packaging environment in container
         run: |
-          sudo apt update
-          sudo apt install -y rpm
+          sudo apt-get install -y binfmt-support qemu-user-static
+          sudo docker run --platform linux/${{ matrix.platform }} -v ${PWD}:/work -w /work -d --name rpmbuild fedora sleep 21600
+          sudo docker exec rpmbuild dnf update -y
+          sudo docker exec rpmbuild dnf install golang cmake rpmdevtools -y
       - name: Build
-        run: make rpm
+        run: sudo docker exec rpmbuild make rpm PWD=/work
       - name: Upload RPM Package File to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: kubescape_rpm
+          name: kubescape_rpm_${{ matrix.platform }}
           path: rpmbuild/RPMS/*
