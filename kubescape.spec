@@ -25,9 +25,9 @@ Summary:        Kubescape CLI interface
 License:        Apache-2.0
 Group:          Development/Tools
 URL:            https://github.com/kubescape/%{name}
-Source0:        %{url}/archive/v%{version}.tar.gz
-Source1:        https://github.com/libgit2/git2go/archive/refs/tags/v%{git2go_version}.tar.gz
-Source2:        https://github.com/libgit2/libgit2/archive/refs/tags/v%{libgit2_version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source1:        https://github.com/libgit2/git2go/archive/v%{git2go_version}/git2go-%{git2go_version}.tar.gz
+Source2:        https://github.com/libgit2/libgit2/archive/v%{libgit2_version}/libgit2-%{libgit2_version}.tar.gz
 BuildRequires:  golang
 BuildRequires:  pkg-config
 BuildRequires:  cmake
@@ -50,7 +50,7 @@ rm -rf git2go/vendor/libgit2 && mv libgit2-%{libgit2_version} git2go/vendor/libg
 export CGO_ENABLED=1
 export GOCACHE=${PWD}/../../../cache
 cd git2go && make install-static && cd ..
-go build -buildmode=pie -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+go build -buildmode=pie -ldflags="-buildvcs=false -s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
 
 %install
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
