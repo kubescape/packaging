@@ -10,6 +10,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  GO_VERSION: 1.19
+
 jobs:
   debian:
     runs-on: ubuntu-latest
@@ -23,6 +26,10 @@ jobs:
           path: cache
           key: deb-amd64-go-${{ hashFiles('**/*.spec') }}
           restore-keys: deb-amd64-go-
+      - uses: actions/setup-go@v3
+        name: Installing go
+        with:
+          go-version: ${{ env.GO_VERSION }}
       - name: Install Dependencies
         run: |
           sudo apt update
@@ -54,7 +61,7 @@ jobs:
       - name: Start packaging environment in container
         run: |
           sudo apt-get install -y binfmt-support qemu-user-static
-          sudo docker run --platform linux/arm64 -v ${PWD}:/work -w /work -d --name debbuild ubuntu sleep 21600
+          sudo docker run --platform linux/arm64 -v ${PWD}:/work -w /work -d --name debbuild golang:${{ env.GO_VERSION }}-bullseye sleep 21600
           sudo docker exec debbuild apt update
           sudo docker exec debbuild apt install -y debhelper golang cmake autopkgtest
       - name: Build
