@@ -59,6 +59,8 @@ install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
 if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%{version} [git enabled in build: true]" ]; then exit 1; fi
 
 %files
+%license LICENSE
+%doc README.md
 %{_bindir}/%{name}
 
 %changelog
