@@ -1,6 +1,6 @@
 # kubescape deb rpm
 
-[![build result](https://build.opensuse.org/projects/home:hollowman/packages/kubescape/badge.svg?type=default)](https://build.opensuse.org/package/show/home:hollowman/kubescape)
+[![build result](https://build.opensuse.org/projects/home:hollowman/packages/kubescape/badge.svg?type=percent)](https://build.opensuse.org/package/show/home:hollowman/kubescape)
 
 Debian and rpm packaging scripts that allow installation of [Kubescape](https://github.com/armosec/kubescape) through the debian and rpm package manager.
 

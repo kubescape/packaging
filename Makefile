@@ -54,7 +54,7 @@ vendor: clean prepare
 deb: vendor
 	cd deb; dpkg-buildpackage -F -d;
 
-ppa: clean prepare
+ppa: vendor
 	cd deb; \
 		dpkg-buildpackage -S;
 	dput kubescape *source.changes

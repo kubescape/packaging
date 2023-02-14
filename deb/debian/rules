@@ -2,13 +2,16 @@
 
 export CGO_ENABLED=1
 
+ifndef GOCACHE
+	export GOCACHE=$(PWD)/cache
+endif
+
 ifndef VERSION
 	VERSION = $(shell cat debian/control | grep Standards-Version | cut -d' ' -f2)
 endif
 
 NAME := kubescape
 KUBESCAPE := $(NAME)/$(NAME)
-TEST_VERSION := 
 
 %:
 	dh $@
@@ -16,7 +19,7 @@ TEST_VERSION :=
 override_dh_auto_build:
 	cd $(NAME)/git2go; make install-static
 	cp -r $(NAME)/git2go/static-build $(NAME)/vendor/github.com/libgit2/git2go/v*/
-	cd $(NAME); go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v2/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o $(NAME)
+	cd $(NAME); go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v2/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o $(NAME)
 	@command -V go
 	@go version
 	dh_auto_build
