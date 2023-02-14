@@ -10,4 +10,4 @@ Get the latest debian or rpm package from the [GitHub Actions Workflow](https://
 - `kubescape_rpm_amd64.zip` Kubescape rpm package for amd64 (x86_64)
 - `kubescape_rpm_arm64.zip` Kubescape rpm package for arm64 (aarch64)
 
-Unzip the package and install it with `sudo dpkg -i kubescape*.deb`, `dnf install */kubescape*.rpm`, `zypper install */kubescape*.rpm`.
+Unzip the package and install it with `sudo dpkg -i kubescape*.deb`, `sudo dnf install */kubescape*.rpm`, `sudo zypper install */kubescape*.rpm`.

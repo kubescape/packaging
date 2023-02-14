@@ -28,7 +28,7 @@ URL:            https://github.com/kubescape/%{name}
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/libgit2/git2go/archive/v%{git2go_version}/git2go-%{git2go_version}.tar.gz
 Source2:        https://github.com/libgit2/libgit2/archive/v%{libgit2_version}/libgit2-%{libgit2_version}.tar.gz
-BuildRequires:  golang(API) >= 1.19
+BuildRequires:  golang >= 1.19
 BuildRequires:  pkg-config
 BuildRequires:  cmake
 Provides:       %{name} = %{version}
