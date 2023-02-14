@@ -29,13 +29,11 @@ Source0:        %{name}_%{version}.tar.xz
 BuildRequires:  golang >= 1.19
 BuildRequires:  pkg-config
 BuildRequires:  cmake
-Provides:       %{name} = %{version}
 
 %description
-Kubescape is an open-source Kubernetes security platform for your IDE, CI/CD
-pipelines, and clusters. It includes risk analysis, security, compliance, and
-misconfiguration scanning, saving Kubernetes users and administrators precious
-time, effort, and resources.
+An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters.
+It includes risk analysis, security, compliance, and misconfiguration scanning, saving
+Kubernetes users and administrators precious time, effort, and resources.
 
 %package bash-completion
 Summary:        Bash Completion for %{name}
