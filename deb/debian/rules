@@ -3,7 +3,7 @@
 export CGO_ENABLED=1
 
 ifndef GOCACHE
-	export GOCACHE=$(PWD)/cache
+	export GOCACHE=$(shell pwd)/cache
 endif
 
 ifndef VERSION
