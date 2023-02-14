@@ -1,1 +1,4 @@
-kubescape/kubescape      /usr/bin
+kubescape/kubescape              /usr/bin
+completion/bash/kubescape        /usr/share/bash-completion/completions/
+completion/fish/kubescape.fish   /usr/share/fish/vendor_completions.d/
+completion/zsh/_kubescape        /usr/share/zsh/vendor-completions/

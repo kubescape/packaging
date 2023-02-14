@@ -28,7 +28,7 @@ URL:            https://github.com/kubescape/%{name}
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/libgit2/git2go/archive/v%{git2go_version}/git2go-%{git2go_version}.tar.gz
 Source2:        https://github.com/libgit2/libgit2/archive/v%{libgit2_version}/libgit2-%{libgit2_version}.tar.gz
-BuildRequires:  golang
+BuildRequires:  golang(API) >= 1.19
 BuildRequires:  pkg-config
 BuildRequires:  cmake
 Provides:       %{name} = %{version}
@@ -38,6 +38,38 @@ Kubescape is an open-source Kubernetes security platform for your IDE, CI/CD
 pipelines, and clusters. It includes risk analysis, security, compliance, and
 misconfiguration scanning, saving Kubernetes users and administrators precious
 time, effort, and resources.
+
+%package bash-completion
+Summary:        Bash Completion for %{name}
+Group:          System/Shells
+Requires:       bash-completion
+Supplements:    packageand(%{name}:bash)
+BuildArch:      noarch
+
+%description bash-completion
+The official bash completion script for %{name}, generated during the build.
+
+
+%package zsh-completion
+Summary:        Zsh Completion for %{name}
+Group:          System/Shells
+Requires:       zsh-completion
+Supplements:    packageand(%{name}:zsh)
+BuildArch:      noarch
+
+%description zsh-completion
+The official zsh completion script for %{name}, generated during the build.
+
+
+%package fish-completion
+Summary:        Fish Completion for %{name}
+Group:          System/Shells
+Requires:       fish-completion
+Supplements:    packageand(%{name}:fish)
+BuildArch:      noarch
+
+%description fish-completion
+The official fish completion script for %{name}, generated during the build.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -55,6 +87,18 @@ go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/
 %install
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
 
+# Bash autocomplete file
+%{buildroot}/%{_bindir}/%{name} completion bash > %{name}-autocomplete.sh
+install -Dm 644 %{name}-autocomplete.sh %{buildroot}%{_datadir}/bash-completion/completions/%{name}
+
+# Zsh autocomplete file
+%{buildroot}/%{_bindir}/%{name} completion zsh > %{name}-autocomplete.sh
+install -Dm 644 %{name}-autocomplete.sh %{buildroot}%{_datadir}/zsh/vendor-completions/_%{name}
+
+# Fish autocomplete file
+%{buildroot}/%{_bindir}/%{name} completion fish > %{name}-autocomplete.sh
+install -Dm 644 %{name}-autocomplete.sh %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
+
 %check
 if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%{version} [git enabled in build: true]" ]; then exit 1; fi
 
@@ -62,6 +106,15 @@ if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
+
+%files bash-completion
+%{_datadir}/bash-completion/completions/%{name}
+
+%files zsh-completion
+%{_datadir}/zsh/vendor-completions/_%{name}
+
+%files fish-completion
+%{_datadir}/fish/vendor_completions.d/%{name}.fish
 
 %changelog
 * Fri Feb 10 2023 Hollow Man <hollowman@opensuse.org> - 2.1.3

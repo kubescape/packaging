@@ -7,9 +7,24 @@ ifndef VERSION
 	VERSION = $(shell cat debian/control | grep Standards-Version | cut -d' ' -f2)
 endif
 
+NAME := kubescape
+KUBESCAPE := $(NAME)/$(NAME)
+TEST_VERSION := 
+
 %:
 	dh $@
 
-build:
-	cd kubescape/git2go; make install-static
-	cd kubescape; go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/kubescape/v2/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o kubescape
+override_dh_auto_build:
+	cd $(NAME)/git2go; make install-static
+	cd $(NAME); go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v2/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o $(NAME)
+	@command -V go
+	@go version
+	dh_auto_build
+	if [ "$$($(KUBESCAPE) version)" != "Your current version is: v${VERSION} [git enabled in build: true]" ]; then \
+		exit 1; \
+	fi
+	mkdir -p completion
+	cd completion && mkdir -p bash fish zsh
+	$(KUBESCAPE) completion bash > completion/bash/$(NAME)
+	$(KUBESCAPE) completion fish > completion/fish/$(NAME).fish
+	$(KUBESCAPE) completion zsh > completion/zsh/_$(NAME)

@@ -24,13 +24,13 @@ clean:
 	-rm -fR *.dsc
 	-rm -fR *.changes
 	-rm -fR *.buildinfo
+	-rm -fR deb/completion
 	-rm -fR deb/kubescape
 	-rm -fR deb/debian/kubescape*
 	-rm -fR deb/debian/debhelper-build-stamp
 	-rm -fR deb/debian/files
 	-rm -fR deb/debian/.debhelper
 	-rm -fR *.upload
-	cd binary; make clean-all
 
 debprepare:
 	rm -rf deb/kubescape
@@ -45,7 +45,7 @@ debprepare:
 		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
 deb: debprepare
-	cd deb; dpkg-buildpackage -F; sudo dpkg -i ../kubescape_*.deb; autopkgtest . -- null;
+	cd deb; dpkg-buildpackage -F;
 
 ppa: clean debprepare
 	cd deb; \
