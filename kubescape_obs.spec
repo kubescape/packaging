@@ -1,5 +1,5 @@
 #
-# spec file for package kubescape
+# spec file for building package kubescape in openSUSE Build Service (OBS)
 #
 # Copyright (c) 2023 Hollow Man
 #
@@ -25,9 +25,7 @@ Summary:        Kubescape CLI interface
 License:        Apache-2.0
 Group:          Development/Tools/Other
 URL:            https://github.com/kubescape/%{name}
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-Source1:        https://github.com/libgit2/git2go/archive/v%{git2go_version}/git2go-%{git2go_version}.tar.gz
-Source2:        https://github.com/libgit2/libgit2/archive/v%{libgit2_version}/libgit2-%{libgit2_version}.tar.gz
+Source0:        %{name}_%{version}.tar.xz
 BuildRequires:  golang >= 1.19
 BuildRequires:  pkg-config
 BuildRequires:  cmake
@@ -72,17 +70,13 @@ BuildArch:      noarch
 The official fish completion script for %{name}, generated during the build.
 
 %prep
-%setup -q -n %{name}-%{version}
-%setup -q -T -D -a 1
-%setup -q -T -D -a 2
-rm -rf git2go && mv git2go-%{git2go_version} git2go
-rm -rf git2go/vendor/libgit2 && mv libgit2-%{libgit2_version} git2go/vendor/libgit2
+%setup -q -n deb/%{name}
 
 %build
 export CGO_ENABLED=1
-export GOCACHE=${PWD}/../../../cache
 cd git2go && make install-static && cd ..
-go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
+go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
 
 %install
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}

@@ -33,7 +33,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y debhelper golang cmake autopkgtest
+          sudo apt install -y debhelper golang-golang-x-tools cmake autopkgtest
       - name: Build
         run: |
           make deb
@@ -63,19 +63,15 @@ jobs:
           sudo apt-get install -y binfmt-support qemu-user-static
           sudo docker run --platform linux/arm64 -v ${PWD}:/work -w /work -d --name debbuild golang:${{ env.GO_VERSION }}-bullseye sleep 21600
           sudo docker exec debbuild apt update
-          sudo docker exec debbuild apt install -y debhelper golang cmake autopkgtest sudo
+          sudo docker exec debbuild apt install -y debhelper golang-golang-x-tools cmake autopkgtest
       - name: Build
         run: |
           sudo docker exec debbuild make deb
-          mkdir upload
-          mv kubescape_*.dsc upload
-          mv kubescape_*.tar.xz upload
-          mv kubescape_*.deb upload
       - name: Upload Debian Package Files to Artifact
         uses: actions/upload-artifact@v3
         with:
           name: kubescape_debian_arm64
-          path: upload/*
+          path: kubescape_*.deb
   rpm:
     runs-on: ubuntu-latest
     strategy:

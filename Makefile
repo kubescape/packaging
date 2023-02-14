@@ -15,6 +15,8 @@ ifndef LIBGIT2_VERSION
 	LIBGIT2_VERSION = $(shell cat kubescape.spec | grep "global libgit2_version" | cut -d' ' -f3)
 endif
 
+export GOCACHE=$(PWD)/cache
+
 clean:
 	-rm -fR rpmbuild
 	-rm -fR *.deb
@@ -32,7 +34,7 @@ clean:
 	-rm -fR deb/debian/.debhelper
 	-rm -fR *.upload
 
-debprepare:
+prepare:
 	rm -rf deb/kubescape
 	curl --output kubescape.src.tar.gz -L https://github.com/kubescape/kubescape/archive/v$(VERSION)/kubescape-$(VERSION).tar.gz
 	curl --output git2go.src.tar.gz -L https://github.com/libgit2/git2go/archive/v$(GIT2GO_VERSION)/git2go-$(GIT2GO_VERSION).tar.gz
@@ -41,21 +43,28 @@ debprepare:
 	mv deb/kubescape-$(VERSION) deb/kubescape
 	cd deb/kubescape; tar -xf ../../git2go.src.tar.gz; \
 		rm -rf git2go; mv git2go-$(GIT2GO_VERSION) git2go
-	cd deb/kubescape/git2go/vendor; tar -xf ../../../../libgit2.src.tar.gz; \
+	cd deb/kubescape/git2go; tar -xf ../../../libgit2.src.tar.gz; \
 		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
-deb: debprepare
-	cd deb; dpkg-buildpackage -F;
+vendor: clean prepare
+	cd deb/kubescape; go mod vendor; go generate -mod vendor ./...
+	cd deb/kubescape/git2go; go mod vendor; go generate -mod vendor ./...; mv libgit2 vendor
+	sed -i 's/go install /go install -mod vendor /' deb/kubescape/git2go/Makefile
 
-ppa: clean debprepare
+deb: vendor
+	cd deb; dpkg-buildpackage -F -d;
+
+ppa: clean prepare
 	cd deb; \
 		dpkg-buildpackage -S;
 	dput kubescape *source.changes
 
-rpm:
+rpmdir:
 	mkdir -p rpmbuild/BUILD
 	mkdir -p rpmbuild/RPMS
 	mkdir -p rpmbuild/SOURCES
 	mkdir -p rpmbuild/SPECS
 	mkdir -p rpmbuild/SRPMS
+
+rpm: rpmdir
 	rpmbuild --undefine=_disable_source_fetch -ba kubescape.spec -D "_topdir $(PWD)/rpmbuild" -D 'debug_package %{nil}'
