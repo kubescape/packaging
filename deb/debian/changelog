@@ -1,3 +1,9 @@
+kubescape (2.2.2) kinetic; urgency=medium
+
+  * v2.2.2: Upgrade with patches
+
+ -- Hollow Man (Domain Address) <hollowman@opensuse.org>  Sun, 26 Feb 2023 20:58:32 +0200
+
 kubescape (2.2.1) kinetic; urgency=medium
 
   * v2.2.1: Upgrade
