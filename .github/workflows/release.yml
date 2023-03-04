@@ -1,0 +1,102 @@
+name: Update release with upstream
+
+on:
+  workflow_dispatch:  # Allow manual triggers
+  push:
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+env:
+  GO_VERSION: 1.19
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update repo
+      run: |
+        . ./update.sh
+        echo "version=v$LATEST" >> $GITHUB_ENV
+        if [ $RELEASE == 0 ]; then unset RELEASE; else $RELEASE=" release ${RELEASE}"; fi
+        echo "release=$RELEASE" >> $GITHUB_ENV
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+        commit_message: Bump version into ${{ env.version }}${{ env.release }}
+  osc:
+    runs-on: ubuntu-latest
+    needs: update
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          submodules: 'recursive'
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: cache
+          key: deb-amd64-go-${{ hashFiles('**/*.spec') }}
+          restore-keys: deb-amd64-go-
+      - uses: actions/setup-go@v3
+        name: Installing go
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y osc debhelper golang-golang-x-tools cmake
+      - name: Set osc secret
+        run: |
+          mkdir -p ~/.config/osc
+          echo "${{ secrets.OSCRC }}" >> ~/.config/osc/oscrc
+        shell: bash
+      - name: Build
+        run: make dsc
+      - name: OSC update
+        run: |
+          osc checkout home:hollowman/kubescape
+          cd home:hollowman/kubescape
+          rm kubescape*
+          mv ../../kubescape_obs.spec kubescape.spec
+          VERSION=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
+          mv ../../kubescape_${VERSION}.dsc .
+          mv ../../kubescape_${VERSION}.tar.xz .
+          osc addremove *
+          osc commit -m "Sync with source repo at version ${VERSION}"
+  ppa:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [kinetic, lunar]
+    needs: update
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          submodules: 'recursive'
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: cache
+          key: deb-amd64-go-${{ hashFiles('**/*.spec') }}
+          restore-keys: deb-amd64-go-
+      - uses: actions/setup-go@v3
+        name: Installing go
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y debhelper dput golang-golang-x-tools cmake python3-paramiko
+          mv .dput.cf ~
+      - name: Upload to PPA
+        run: |
+          RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
+          if [ $RELEASE == 0 ]; then unset RELEASE; fi
+          sed -i "s/) kinetic;/~${{ matrix.platform }}${RELEASE}) ${{ matrix.platform }};/" deb/debian/changelog
+          make ppa

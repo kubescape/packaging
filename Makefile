@@ -54,9 +54,11 @@ vendor: clean prepare
 deb: vendor
 	cd deb; dpkg-buildpackage -F -d;
 
-ppa: vendor
+dsc: vendor
 	cd deb; \
-		dpkg-buildpackage -S;
+		dpkg-buildpackage -S -d;
+
+ppa: dsc
 	dput kubescape *source.changes
 
 rpmdir:
