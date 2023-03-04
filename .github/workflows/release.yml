@@ -1,4 +1,4 @@
-name: Update release with upstream
+name: Release with upstream
 
 on:
   workflow_dispatch:  # Allow manual triggers
@@ -18,16 +18,17 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.PAT }}
     - name: Update repo
       run: |
         . ./update.sh
         echo "version=v$LATEST" >> $GITHUB_ENV
-        if [ $RELEASE == 0 ]; then unset RELEASE; else $RELEASE=" release ${RELEASE}"; fi
-        echo "release=$RELEASE" >> $GITHUB_ENV
+        if [ "$LATEST" == "$CURRENT" ]; then echo "release=release $((RELEASE+1))" >> $GITHUB_ENV; fi
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-        commit_message: Bump version into ${{ env.version }}${{ env.release }}
+        commit_message: Bump version into ${{ env.version }} ${{ env.release }}
   osc:
     runs-on: ubuntu-latest
     needs: update
@@ -50,6 +51,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y osc debhelper golang-golang-x-tools cmake
+      - name: Setup PGP
+        run: |
+          echo "${{ secrets.PGP }}" >> secret.gpg
+          gpg --import secret.gpg
+          gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
+          gpg --list-keys
       - name: Set osc secret
         run: |
           mkdir -p ~/.config/osc
@@ -64,10 +71,11 @@ jobs:
           rm kubescape*
           mv ../../kubescape_obs.spec kubescape.spec
           VERSION=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
+          RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
           mv ../../kubescape_${VERSION}.dsc .
           mv ../../kubescape_${VERSION}.tar.xz .
           osc addremove *
-          osc commit -m "Sync with source repo at version ${VERSION}"
+          osc commit -m "Sync with source repo at version ${VERSION} with release ${RELEASE}"
   ppa:
     runs-on: ubuntu-latest
     strategy:
@@ -94,6 +102,24 @@ jobs:
           sudo apt update
           sudo apt install -y debhelper dput golang-golang-x-tools cmake python3-paramiko
           mv .dput.cf ~
+      - name: Setup PGP
+        run: |
+          echo "${{ secrets.PGP }}" >> secret.gpg
+          gpg --import secret.gpg
+          gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
+          gpg --list-keys
+      - name: Setup SSH key
+        run: |
+          mkdir ~/.ssh
+          echo "${{ secrets.SSH }}" >> ~/.ssh/id_ed25519
+          echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqvoBSkcpQLcvtY6BvqgxT1MRqgYGK+uyC7Q0d+D0lJ hollowman@opensuse.org" >> cat ~/.ssh/id_ed25519.pub
+          echo "|1|uIWW5daPIPYqCEyw/JIK815RHV8=|/DC35195m6v32WIz4xXXncyJ4ZM= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0aKz5UTUndYgIGG7dQBV+HaeuEZJ2xPHo2DS2iSKvUL4xNMSAY4UguNW+pX56nAQmZKIZZ8MaEvSj6zMEDiq6HFfn5JcTlM80UwlnyKe8B8p7Nk06PPQLrnmQt5fh0HmEcZx+JU9TZsfCHPnX7MNz4ELfZE6cFsclClrKim3BHUIGq//t93DllB+h4O9LHjEUsQ1Sr63irDLSutkLJD6RXchjROXkNirlcNVHH/jwLWR5RcYilNX7S5bIkK8NlWPjsn/8Ua5O7I9/YoE97PpO6i73DTGLh5H9JN/SITwCKBkgSDWUt61uPK3Y11Gty7o2lWsBjhBUm2Y38CBsoGmBw==" >> ~/.ssh/known_hosts
+          cat >> ~/.ssh/config <<EOL
+          Host ppa.launchpad.net
+          Hostname ppa.launchpad.net
+          IdentityFile ~/.ssh/id_ed25519
+          EOL
+          chmod 600 ~/.ssh/*
       - name: Upload to PPA
         run: |
           RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)

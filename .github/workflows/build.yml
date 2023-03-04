@@ -34,6 +34,13 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y debhelper golang-golang-x-tools cmake
+      - name: Setup PGP
+        run: |
+          echo "${{ secrets.PGP }}" >> secret.gpg
+          gpg --import secret.gpg
+          gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
+          gpg --list-keys
+        shell: bash
       - name: Build
         run: |
           make deb
@@ -63,7 +70,14 @@ jobs:
           sudo apt-get install -y binfmt-support qemu-user-static
           sudo docker run --platform linux/arm64 -v ${PWD}:/work -w /work -d --name debbuild golang:${{ env.GO_VERSION }}-bullseye sleep 21600
           sudo docker exec debbuild apt update
-          sudo docker exec debbuild apt install -y debhelper golang-golang-x-tools cmake
+          sudo docker exec debbuild apt install -y debhelper golang-golang-x-tools cmake gpg
+      - name: Setup PGP
+        run: |
+          echo "${{ secrets.PGP }}" >> secret.gpg
+          sudo docker exec debbuild gpg --import secret.gpg
+          sudo docker exec debbuild gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
+          sudo docker exec debbuild gpg --list-keys
+        shell: bash
       - name: Build
         run: |
           sudo docker exec debbuild make deb
