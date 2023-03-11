@@ -1,3 +1,9 @@
+kubescape (2.2.4) kinetic; urgency=medium
+
+  * v2.2.4: Update
+
+ -- Hollow Man <hollowman@opensuse.org>  Sat, 11 Mar 2023 14:25:12 +0000
+
 kubescape (2.2.2) kinetic; urgency=medium
 
   * v2.2.2: Upgrade with patches

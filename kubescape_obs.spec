@@ -19,7 +19,7 @@
 %global git2go_version 33.0.9
 %global libgit2_version 1.3.0
 Name:           kubescape
-Version:        2.2.2
+Version:        2.2.4
 Release:        0
 Summary:        CLI interface of a Kubernetes security platform
 License:        Apache-2.0
@@ -109,6 +109,9 @@ if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%
 %{_datadir}/fish
 
 %changelog
+* Sat Mar 11 2023 github-actions[bot] <github-actions[bot]@users.noreply.github.com> - 2.2.4
+- Update to 2.2.4
+
 * Sun Feb 26 2023 Hollow Man <hollowman@opensuse.org> - 2.2.2
 - Upgrade with patches
 
