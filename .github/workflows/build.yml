@@ -35,8 +35,11 @@ jobs:
           sudo apt update
           sudo apt install -y debhelper golang-golang-x-tools cmake
       - name: Setup PGP
+        env:
+          PGP: ${{ secrets.PGP }}
+        if: env.PGP != null
         run: |
-          echo "${{ secrets.PGP }}" >> secret.gpg
+          echo "${{ env.PGP }}" >> secret.gpg
           gpg --import secret.gpg
           gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
           gpg --list-keys
@@ -72,8 +75,11 @@ jobs:
           sudo docker exec debbuild apt update
           sudo docker exec debbuild apt install -y debhelper golang-golang-x-tools cmake gpg
       - name: Setup PGP
+        env:
+          PGP: ${{ secrets.PGP }}
+        if: env.PGP != null
         run: |
-          echo "${{ secrets.PGP }}" >> secret.gpg
+          echo "${{ env.PGP }}" >> secret.gpg
           sudo docker exec debbuild gpg --import secret.gpg
           sudo docker exec debbuild gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
           sudo docker exec debbuild gpg --list-keys

@@ -11,15 +11,38 @@ env:
   GO_VERSION: 1.19
 
 jobs:
+  check-secret:
+      runs-on: ubuntu-latest
+      outputs:
+        OSCRC: ${{ steps.OSCRC.outputs.defined }}
+        SSH: ${{ steps.SSH.outputs.defined }}
+      steps:
+          - name: Check if OSCRC is defined in secrets
+            id: OSCRC
+            env:
+              KEY: ${{ secrets.OSCRC }}
+            run: echo "defined=${{ env.KEY != '' }}" >> $GITHUB_OUTPUT
+          - name: Check if SSH is defined in secrets
+            id: SSH
+            env:
+              KEY: ${{ secrets.SSH }}
+            run: echo "defined=${{ env.KEY != '' }}" >> $GITHUB_OUTPUT
   update:
     runs-on: ubuntu-latest
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
       contents: write
     steps:
+    - name: Set release token
+      run: |
+        if [ "${{ secrets.PAT }}" != "" ]; then
+          echo "TOKEN=${{ secrets.PAT }}" >> $GITHUB_ENV;
+        else
+          echo "TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV;
+        fi
     - uses: actions/checkout@v3
       with:
-        token: ${{ secrets.PAT }}
+        token: ${{ env.TOKEN }}
     - name: Update repo
       run: |
         . ./update.sh
@@ -31,7 +54,8 @@ jobs:
         commit_message: Bump version into ${{ env.version }} ${{ env.release }}
   osc:
     runs-on: ubuntu-latest
-    needs: update
+    needs: [update, check-secret]
+    if: needs.check-secret.outputs.OSCRC == 'true'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -52,8 +76,11 @@ jobs:
           sudo apt update
           sudo apt install -y osc debhelper golang-golang-x-tools cmake
       - name: Setup PGP
+        env:
+          PGP: ${{ secrets.PGP }}
+        if: env.PGP != null
         run: |
-          echo "${{ secrets.PGP }}" >> secret.gpg
+          echo "${{ env.PGP }}" >> secret.gpg
           gpg --import secret.gpg
           gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
           gpg --list-keys
@@ -78,10 +105,11 @@ jobs:
           osc commit -m "Sync with source repo at version ${VERSION} with release ${RELEASE}"
   ppa:
     runs-on: ubuntu-latest
+    needs: [update, check-secret]
+    if: needs.check-secret.outputs.SSH == 'true'
     strategy:
       matrix:
         platform: [kinetic, lunar]
-    needs: update
     steps:
       - uses: actions/checkout@v3
         with:
@@ -103,8 +131,11 @@ jobs:
           sudo apt install -y debhelper dput golang-golang-x-tools cmake python3-paramiko
           mv .dput.cf ~
       - name: Setup PGP
+        env:
+          PGP: ${{ secrets.PGP }}
+        if: env.PGP != null
         run: |
-          echo "${{ secrets.PGP }}" >> secret.gpg
+          echo "${{ env.PGP }}" >> secret.gpg
           gpg --import secret.gpg
           gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
           gpg --list-keys
