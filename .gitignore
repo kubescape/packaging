@@ -13,4 +13,6 @@ deb/debian/kubescape*
 deb/debian/debhelper-build-stamp
 deb/debian/files
 deb/debian/.debhelper
+snap/kubescape
+snap/*.snap
 *.upload

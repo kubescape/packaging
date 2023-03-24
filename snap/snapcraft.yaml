@@ -1,0 +1,58 @@
+name: cli-kubescape
+base: core22
+version: '2.2.5'
+summary: "Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
+description: |
+  **Usage**: `$ cli-kubescape scan https://github.com/kubescape/kubescape`
+
+  _Note: Currently kubenetes cluster scan is not supported when installed with snap._
+
+  Learn more at: https://github.com/kubescape/kubescape/blob/master/docs/getting-started.md#run-your-first-scan
+
+  Kubescape is an open-source Kubernetes security platform.
+  It includes risk analysis, security compliance, and misconfiguration scanning.
+  Targeted at the DevSecOps practitioner or platform engineer, it offers an easy-to-use CLI interface,
+  flexible output formats, and automated scanning capabilities.
+  It saves Kubernetes users and admins precious time, effort, and resources.
+
+  Kubescape scans clusters, YAML files, and Helm charts.
+  It detects misconfigurations according to multiple frameworks (including NSA-CISA,
+  MITRE ATT&CK® and the CIS Benchmark).
+
+  Kubescape was created by ARMO and is a Cloud Native Computing Foundation (CNCF) sandbox project.
+grade: stable
+confinement: strict
+
+parts:
+  build-deps:
+    plugin: nil
+    override-build: |
+      snap install go --classic --channel 1.19/stable
+    build-packages:
+      - cmake
+      - pkg-config
+
+  build:
+    after: [build-deps]
+    plugin: nil
+    source: kubescape
+    override-build: |
+      # export GOARCH=amd64
+      export CGO_ENABLED=1
+      export EXEC=${SNAPCRAFT_PART_INSTALL}/kubescape
+      cd git2go; make install-static; cd ..
+      cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
+      go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/kubescape/v2/core/cautils.BuildNumber=v${SNAPCRAFT_PROJECT_VERSION}" -tags=static,gitenabled -o $EXEC
+      if [ "$($EXEC version)" != "Your current version is: v${SNAPCRAFT_PROJECT_VERSION} [git enabled in build: true]" ]; then \
+        exit 1; \
+      fi
+      $EXEC completion bash > ${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}
+apps:
+  cli-kubescape:
+    command: kubescape
+    completer: ${SNAPCRAFT_PROJECT_NAME}
+    plugs:
+      - home
+      - docker
+      - network
+      - network-bind

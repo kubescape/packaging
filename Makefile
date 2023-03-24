@@ -32,34 +32,43 @@ clean:
 	-rm -fR deb/debian/debhelper-build-stamp
 	-rm -fR deb/debian/files
 	-rm -fR deb/debian/.debhelper
+	-rm -fR snap/kubescape
+	-rm -fR snap/*.snap
 	-rm -fR *.upload
 
 prepare:
-	rm -rf deb/kubescape
+	rm -rf $(path)/kubescape
 	curl --output kubescape.src.tar.gz -L https://github.com/kubescape/kubescape/archive/v$(VERSION)/kubescape-$(VERSION).tar.gz
 	curl --output git2go.src.tar.gz -L https://github.com/libgit2/git2go/archive/v$(GIT2GO_VERSION)/git2go-$(GIT2GO_VERSION).tar.gz
 	curl --output libgit2.src.tar.gz -L https://github.com/libgit2/libgit2/archive/v$(LIBGIT2_VERSION)/libgit2-$(LIBGIT2_VERSION).tar.gz
-	cd deb; tar -xf ../kubescape.src.tar.gz
-	mv deb/kubescape-$(VERSION) deb/kubescape
-	cd deb/kubescape; tar -xf ../../git2go.src.tar.gz; \
+	cd $(path); tar -xf ../kubescape.src.tar.gz
+	mv $(path)/kubescape-$(VERSION) $(path)/kubescape
+	cd $(path)/kubescape; tar -xf ../../git2go.src.tar.gz; \
 		rm -rf git2go; mv git2go-$(GIT2GO_VERSION) git2go
-	cd deb/kubescape/git2go; tar -xf ../../../libgit2.src.tar.gz; \
+	cd $(path)/kubescape/git2go; tar -xf ../../../libgit2.src.tar.gz; \
 		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
 vendor: clean prepare
-	cd deb/kubescape; go mod vendor; go generate -mod vendor ./...
-	cd deb/kubescape/git2go; go mod vendor; go generate -mod vendor ./...; mv libgit2 vendor
-	sed -i 's/go install /go install -mod vendor /' deb/kubescape/git2go/Makefile
+	cd $(path)/kubescape; go mod vendor; go generate -mod vendor ./...
+	cd $(path)/kubescape/git2go; go mod vendor; go generate -mod vendor ./...; mv libgit2 vendor
+	sed -i 's/go install /go install -mod vendor /' $(path)/kubescape/git2go/Makefile
 
+deb: path:=deb
 deb: vendor
-	cd deb; dpkg-buildpackage -F -d;
+	cd $(path); dpkg-buildpackage -F -d;
 
+dsc: path:=deb
 dsc: vendor
-	cd deb; \
+	cd $(path); \
 		dpkg-buildpackage -S -d;
 
 ppa: dsc
 	dput kubescape *source.changes
+
+snap: path:=snap
+snap: vendor
+	cd $(path); \
+		snapcraft --use-lxd
 
 rpmdir:
 	mkdir -p rpmbuild/BUILD

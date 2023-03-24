@@ -14,6 +14,7 @@ if [ "$LATEST" != "$CURRENT" ]; then
     sed -i "s/%changelog/%changelog\n* $(date +"%a %b %d %Y") github-actions[bot] <github-actions[bot]@users.noreply.github.com> - $LATEST\n- Update to $LATEST\n/g" kubescape*.spec
     sed -i "s/Standards-Version: $CURRENT/Standards-Version: $LATEST/g" deb/debian/control
     sed -i "1s/^/kubescape ($LATEST) $UBUNTU; urgency=medium\n\n  * v$LATEST: Update\n\n -- Hollow Man <hollowman@opensuse.org>  $(date +"%a, %d %b %Y %H:%M:%S %z")\n\n/" deb/debian/changelog
+    sed -i "s/version: '$CURRENT'/version: '$LATEST'/g" snap/snapcraft.yaml
 else
     echo "No new version available"
     sed -i "s/Release:.*/Release:        $((RELEASE+1))/g" kubescape*.spec
