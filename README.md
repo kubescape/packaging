@@ -10,10 +10,10 @@ Debian and rpm packaging scripts that allow installation of [Kubescape](https://
 
 ### Ubuntu
 
-[Ubuntu launchpad PPA](https://launchpad.net/~hollowman86/+archive/ubuntu/kubescape)
+[Ubuntu launchpad PPA](https://launchpad.net/~kubescape/+archive/ubuntu/kubescape)
 
 ```bash
-sudo add-apt-repository ppa:hollowman86/kubescape
+sudo add-apt-repository ppa:kubescape/kubescape
 sudo apt update
 sudo apt install kubescape
 ```
