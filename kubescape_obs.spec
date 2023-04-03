@@ -72,7 +72,7 @@ The official fish completion script for %{name}, generated during the build.
 
 %build
 export GOVERSION_MAJOR=$(go version | cut -f1 -d. | cut -f4 -do)
-export GOVERSION_MINOR=$(go version | cut -f2 -d.)
+export GOVERSION_MINOR=$(go version | cut -f2 -d. | cut -f1 -d' ')
 # Use our go compiler if golang version is less than 1.19
 if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 19 ]]; then
   export GOROOT=$(pwd)/golang
@@ -82,8 +82,8 @@ fi
 export CGO_ENABLED=1
 cd %{name}/git2go; make install-static; cd ..
 cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
-${GO} version
-${GO} build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+go version
+go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
 
 %install
 install -Dpm 0755 %{name}/%{name} %{buildroot}%{_bindir}/%{name}

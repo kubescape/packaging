@@ -13,7 +13,7 @@ endif
 NAME := kubescape
 KUBESCAPE := $(NAME)/$(NAME)
 GOVERSION_MAJOR := $(shell go version | cut -f1 -d. | cut -f4 -do)
-GOVERSION_MINOR := $(shell go version | cut -f2 -d.)
+GOVERSION_MINOR := $(shell go version | cut -f2 -d. | cut -f1 -d' ')
 BUILDGO = 0
 ifeq ($(shell test $(GOVERSION_MAJOR) -lt 1 || test $(GOVERSION_MINOR) -lt 19; echo $$?),0)
 	BUILDGO := 1
