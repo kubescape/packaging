@@ -1,7 +1,7 @@
 #
 # spec file for package kubescape
 #
-# Copyright (c) 2023 Hollow Man
+# Copyright (c) 2023 The Kubescape Authors
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed

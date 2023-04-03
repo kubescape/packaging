@@ -1,12 +1,12 @@
 # kubescape Packaging
 
-[![build result](https://build.opensuse.org/projects/home:hollowman/packages/kubescape/badge.svg?type=percent)](https://build.opensuse.org/package/show/home:hollowman/kubescape)
+[![build result](https://build.opensuse.org/projects/home:kubescape/packages/kubescape/badge.svg?type=percent)](https://build.opensuse.org/package/show/home:kubescape/kubescape)
 
 Packaging scripts that allow installation of [Kubescape](https://github.com/armosec/kubescape) through various package manager.
 
 ## Installation
 
-[Get the package manager repository](https://software.opensuse.org/download.html?project=home%3Ahollowman&package=kubescape) 
+[Get the package manager repository](https://software.opensuse.org/download.html?project=home%3Akubescape&package=kubescape) 
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/cli-kubescape)
 

@@ -93,8 +93,8 @@ jobs:
         run: make dsc
       - name: OSC update
         run: |
-          osc checkout home:hollowman/kubescape
-          cd home:hollowman/kubescape
+          osc checkout home:kubescape/kubescape
+          cd home:kubescape/kubescape
           rm kubescape*
           mv ../../kubescape_obs.spec kubescape.spec
           VERSION=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
