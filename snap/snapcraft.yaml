@@ -1,6 +1,6 @@
 name: cli-kubescape
 base: core22
-version: '2.2.5'
+version: '2.2.6'
 summary: "Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
 description: |
   **Usage**: `$ cli-kubescape scan https://github.com/kubescape/kubescape`
