@@ -9,6 +9,8 @@ rpmbuild
 *.buildinfo
 deb/completion
 deb/kubescape
+deb/go-go*
+deb/golang
 deb/debian/kubescape*
 deb/debian/debhelper-build-stamp
 deb/debian/files

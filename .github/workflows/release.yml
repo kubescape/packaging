@@ -110,7 +110,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [kinetic, lunar]
+        platform: [lunar, kinetic, jammy, focal, bionic, xenial]
     steps:
       - uses: actions/checkout@v3
         with:

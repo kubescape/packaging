@@ -15,6 +15,7 @@ ifndef LIBGIT2_VERSION
 	LIBGIT2_VERSION = $(shell cat kubescape.spec | grep "global libgit2_version" | cut -d' ' -f3)
 endif
 
+export GOVERSION=1.19.7
 export GOCACHE=$(PWD)/cache
 
 clean:
@@ -28,6 +29,8 @@ clean:
 	-rm -fR *.buildinfo
 	-rm -fR deb/completion
 	-rm -fR deb/kubescape
+	-rm -fR deb/go-go*
+	-rm -fR deb/golang
 	-rm -fR deb/debian/kubescape*
 	-rm -fR deb/debian/debhelper-build-stamp
 	-rm -fR deb/debian/files
@@ -48,7 +51,12 @@ prepare:
 	cd $(path)/kubescape/git2go; tar -xf ../../../libgit2.src.tar.gz; \
 		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
-vendor: clean prepare
+prepare-go-$(GOVERSION):
+	rm -rf $(path)/golang $(path)/go-go*
+	curl --output go.src.tar.gz -L https://github.com/golang/go/archive/refs/tags/go$(GOVERSION).tar.gz
+	cd $(path); tar -xf ../go.src.tar.gz; mv go-go$(GOVERSION) golang
+
+vendor: clean prepare prepare-go-$(GOVERSION)
 	cd $(path)/kubescape; go mod vendor; go generate -mod vendor ./...
 	cd $(path)/kubescape/git2go; go mod vendor; go generate -mod vendor ./...; mv libgit2 vendor
 	sed -i 's/go install /go install -mod vendor /' $(path)/kubescape/git2go/Makefile

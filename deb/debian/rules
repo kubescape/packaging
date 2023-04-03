@@ -12,16 +12,26 @@ endif
 
 NAME := kubescape
 KUBESCAPE := $(NAME)/$(NAME)
+GOVERSION_MAJOR := $(shell go version | cut -f1 -d. | cut -f4 -do)
+GOVERSION_MINOR := $(shell go version | cut -f2 -d.)
+BUILDGO = 0
+ifeq ($(shell test $(GOVERSION_MAJOR) -lt 1 || test $(GOVERSION_MINOR) -lt 19; echo $$?),0)
+	BUILDGO := 1
+	GOROOT := $(shell pwd)/golang
+	PATH := $(GOROOT)/bin:$(PATH)
+endif
 
 %:
 	dh $@
 
 override_dh_auto_build:
-	cd $(NAME)/git2go; make install-static
+	if [ "$(BUILDGO)" = "1" ]; then \
+		cd golang/src && bash ./make.bash; \
+	fi
+	cd $(NAME)/git2go; make install-static PATH=$(PATH) GOROOT=$(GOROOT)
 	cp -r $(NAME)/git2go/static-build $(NAME)/vendor/github.com/libgit2/git2go/v*/
-	cd $(NAME); go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v2/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o $(NAME)
-	@command -V go
-	@go version
+	cd $(NAME); go version; \
+		go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v2/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o $(NAME)
 	dh_auto_build
 	if [ "$$($(KUBESCAPE) version)" != "Your current version is: v${VERSION} [git enabled in build: true]" ]; then \
 		exit 1; \

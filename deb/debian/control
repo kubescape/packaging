@@ -2,7 +2,7 @@ Source: kubescape
 Section: devel
 Priority: optional
 Maintainer: Hollow Man <hollowman@opensuse.org>
-Build-Depends: golang (>= 2:1.19~), cmake, pkg-config, debhelper
+Build-Depends: golang, cmake, pkg-config, debhelper
 Standards-Version: 2.2.5
 Homepage: https://github.com/kubescape/kubescape
 
