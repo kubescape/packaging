@@ -5,18 +5,16 @@
 Packaging scripts that allow installation of [Kubescape](https://github.com/armosec/kubescape) through various package manager.
 
 ## Installation
-
+### All kinds of package manager
 [Get the package manager repository](https://software.opensuse.org/download.html?project=home%3Akubescape&package=kubescape) 
 
+### Snap
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/cli-kubescape)
 
-### Snap
-> Note: If installed using snap, the following limitations apply:
-> - The executable is called `cli-kubescape` and not `kubescape`.
-> - Kubenetes cluster scan is not supported.
+> Note: If installed using snap, the executable is called `cli-kubescape` and not `kubescape`.
 
 ```bash
-sudo snap install cli-kubescape
+sudo snap install cli-kubescape --classic
 ```
 
 ### Ubuntu

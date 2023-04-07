@@ -3,9 +3,7 @@ base: core22
 version: '2.2.6'
 summary: "Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
 description: |
-  **Usage**: `$ cli-kubescape scan https://github.com/kubescape/kubescape`
-
-  _Note: Currently kubenetes cluster scan is not supported when installed with snap._
+  **Usage**: `$ cli-kubescape scan --enable-host-scan --verbose`
 
   Learn more at: https://github.com/kubescape/kubescape/blob/master/docs/getting-started.md#run-your-first-scan
 
@@ -21,7 +19,7 @@ description: |
 
   Kubescape was created by ARMO and is a Cloud Native Computing Foundation (CNCF) sandbox project.
 grade: stable
-confinement: strict
+confinement: classic
 
 parts:
   build-deps:
@@ -39,20 +37,30 @@ parts:
     override-build: |
       # export GOARCH=amd64
       export CGO_ENABLED=1
-      export EXEC=${SNAPCRAFT_PART_INSTALL}/kubescape
+      export EXEC=${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}
       cd git2go; make install-static; cd ..
       cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
       go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/kubescape/v2/core/cautils.BuildNumber=v${SNAPCRAFT_PROJECT_VERSION}" -tags=static,gitenabled -o $EXEC
       if [ "$($EXEC version)" != "Your current version is: v${SNAPCRAFT_PROJECT_VERSION} [git enabled in build: true]" ]; then \
         exit 1; \
       fi
-      $EXEC completion bash > ${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}
+      $EXEC completion bash > ${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}.completer
+      sed -i s/kubescape/${SNAPCRAFT_PROJECT_NAME}/g ${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}.completer
+
+# # snap connect cli-kubescape:kubenetes-config
+# plugs:
+#   kubenetes-config:
+#     interface: personal-files
+#     read:
+#     - $HOME/.kube
+
 apps:
   cli-kubescape:
-    command: kubescape
-    completer: ${SNAPCRAFT_PROJECT_NAME}
-    plugs:
-      - home
-      - docker
-      - network
-      - network-bind
+    command: ${SNAPCRAFT_PROJECT_NAME}
+    completer: ${SNAPCRAFT_PROJECT_NAME}.completer
+    # plugs:
+    #   - home
+    #   - docker
+    #   - network
+    #   - network-bind
+    #   - kubenetes-config

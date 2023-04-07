@@ -36,6 +36,8 @@ clean:
 	-rm -fR deb/debian/files
 	-rm -fR deb/debian/.debhelper
 	-rm -fR snap/kubescape
+	-rm -fR snap/go-go*
+	-rm -fR snap/golang
 	-rm -fR snap/*.snap
 	-rm -fR *.upload
 
@@ -75,6 +77,7 @@ ppa: dsc
 
 snap: path:=snap
 snap: vendor
+	patch -p0 < $(path)/homedir.patch
 	cd $(path); \
 		snapcraft --use-lxd
 
