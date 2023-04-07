@@ -168,7 +168,6 @@ jobs:
       fail-fast: false
       matrix:
         platform: [amd64]
-        # platform: [amd64, arm64, armhf, ppc64el, s390x]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -192,19 +191,13 @@ jobs:
         uses: samuelmeuli/action-snapcraft@v2
       - name: Install LXD
         uses: canonical/setup-lxd@ea57509243d3cf39f8ab926e021bb353947b01b5
-      # - name: Update platform
-      #   run: |
-      #     sed -i "s/# architectures:/architectures:\n\
-      #       - build-on: amd64\n\
-      #         build-for: ${{ matrix.platform }}/g" snap/snapcraft.yaml
-      #     sed -i "s/# export GOARCH=amd64/export GOARCH=${{ matrix.platform }}" snap/snapcraft.yaml
       - name: Build Snap
         run: make snap
       - name: Upload to Snapcraft Store
         if: env.SNAPCRAFT_STORE_CREDENTIALS != null
-        run: cd snap; snapcraft push cli-kubescape_*.snap
+        run: snapcraft push cli-kubescape_*.snap
       - name: Upload Snap Package Files to Artifact
         uses: actions/upload-artifact@v3
         with:
           name: kubescape_snap_${{ matrix.platform }}
-          path: snap/*.snap
+          path: "*.snap"

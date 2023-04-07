@@ -35,10 +35,7 @@ clean:
 	-rm -fR deb/debian/debhelper-build-stamp
 	-rm -fR deb/debian/files
 	-rm -fR deb/debian/.debhelper
-	-rm -fR snap/kubescape
-	-rm -fR snap/go-go*
-	-rm -fR snap/golang
-	-rm -fR snap/*.snap
+	-rm -fR *.snap
 	-rm -fR *.upload
 
 prepare:
@@ -75,11 +72,8 @@ dsc: vendor
 ppa: dsc
 	dput kubescape *source.changes
 
-snap: path:=snap
-snap: vendor
-	patch -p0 < $(path)/homedir.patch
-	cd $(path); \
-		snapcraft --use-lxd
+snap:
+	snapcraft --use-lxd
 
 rpmdir:
 	mkdir -p rpmbuild/BUILD
