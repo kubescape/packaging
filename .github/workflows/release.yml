@@ -158,46 +158,46 @@ jobs:
           if [ $RELEASE == 0 ]; then unset RELEASE; fi
           sed -i "s/) kinetic;/~${{ matrix.platform }}${RELEASE}) ${{ matrix.platform }};/" deb/debian/changelog
           make ppa
-  snapcraft:
-    runs-on: ubuntu-latest
-    needs: [update]
-    env:
-      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
-      SNAPCRAFT_BUILD_INFO: 1
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [amd64]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-          submodules: 'recursive'
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: cache
-          key: deb-amd64-go-${{ hashFiles('**/*.spec') }}
-          restore-keys: deb-amd64-go-
-      - uses: actions/setup-go@v3
-        name: Installing go
-        with:
-          go-version: ${{ env.GO_VERSION }}
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y golang-golang-x-tools
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v2
-      - name: Install LXD
-        uses: canonical/setup-lxd@ea57509243d3cf39f8ab926e021bb353947b01b5
-      - name: Build Snap
-        run: make snap
-      - name: Upload to Snapcraft Store
-        if: env.SNAPCRAFT_STORE_CREDENTIALS != null
-        run: snapcraft push cli-kubescape_*.snap
-      - name: Upload Snap Package Files to Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: kubescape_snap_${{ matrix.platform }}
-          path: "*.snap"
+  # snapcraft:
+  #   runs-on: ubuntu-latest
+  #   needs: [update]
+  #   env:
+  #     SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+  #     SNAPCRAFT_BUILD_INFO: 1
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform: [amd64]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         ref: ${{ github.ref }}
+  #         submodules: 'recursive'
+  #     - name: Cache Go modules
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: cache
+  #         key: deb-amd64-go-${{ hashFiles('**/*.spec') }}
+  #         restore-keys: deb-amd64-go-
+  #     - uses: actions/setup-go@v3
+  #       name: Installing go
+  #       with:
+  #         go-version: ${{ env.GO_VERSION }}
+  #     - name: Install Dependencies
+  #       run: |
+  #         sudo apt update
+  #         sudo apt install -y golang-golang-x-tools
+  #     - name: Install Snapcraft
+  #       uses: samuelmeuli/action-snapcraft@v2
+  #     - name: Install LXD
+  #       uses: canonical/setup-lxd@ea57509243d3cf39f8ab926e021bb353947b01b5
+  #     - name: Build Snap
+  #       run: make snap
+  #     - name: Upload to Snapcraft Store
+  #       if: env.SNAPCRAFT_STORE_CREDENTIALS != null
+  #       run: snapcraft push cli-kubescape_*.snap
+  #     - name: Upload Snap Package Files to Artifact
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: kubescape_snap_${{ matrix.platform }}
+  #         path: "*.snap"
