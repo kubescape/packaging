@@ -17,6 +17,12 @@ Packaging scripts that allow installation of [Kubescape](https://github.com/armo
 sudo snap install cli-kubescape --classic
 ```
 
+### Arch Linux
+Use AUR:
+```bash
+yay -S kubescape
+```
+
 ### Ubuntu
 
 [Ubuntu launchpad PPA](https://launchpad.net/~kubescape/+archive/ubuntu/kubescape)

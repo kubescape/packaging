@@ -52,6 +52,31 @@ jobs:
       with:
         commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
         commit_message: Bump version into ${{ env.version }} ${{ env.release }}
+  aur:
+    runs-on: ubuntu-latest
+    needs: [update, check-secret]
+    if: needs.check-secret.outputs.SSH == 'true'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          submodules: 'recursive'
+      - name: Set version and release
+        run: |
+          VERSION=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
+          RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
+          echo "version=v$VERSION" >> $GITHUB_ENV
+          echo "release=$RELEASE" >> $GITHUB_ENV
+      - name: Publish AUR package
+        uses: KSXGitHub/github-actions-deploy-aur@v2
+        with:
+          pkgname: kubescape
+          pkgbuild: ./PKGBUILD
+          commit_username: github-actions[bot]
+          commit_email: 41898282+github-actions[bot]@users.noreply.github.com
+          ssh_private_key: ${{ secrets.SSH }}
+          commit_message: Bump kubescape version into ${{ env.version }} ${{ env.release }}
+          ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
   osc:
     runs-on: ubuntu-latest
     needs: [update, check-secret]
@@ -97,6 +122,7 @@ jobs:
           cd home:kubescape/kubescape
           rm kubescape*
           mv ../../kubescape_obs.spec kubescape.spec
+          mv ../../PKGBUILD_obs PKGBUILD
           VERSION=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
           RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
           mv ../../kubescape_${VERSION}.dsc .
@@ -156,7 +182,7 @@ jobs:
         run: |
           RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
           if [ $RELEASE == 0 ]; then unset RELEASE; fi
-          sed -i "s/) kinetic;/~${{ matrix.platform }}${RELEASE}) ${{ matrix.platform }};/" deb/debian/changelog
+          sed -i "s/) jammy;/~${{ matrix.platform }}${RELEASE}) ${{ matrix.platform }};/" deb/debian/changelog
           make ppa
   # snapcraft:
   #   runs-on: ubuntu-latest

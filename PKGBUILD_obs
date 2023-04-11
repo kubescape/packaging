@@ -1,0 +1,60 @@
+# Maintainer: Hollow Man <hollowman at opensuse dot org>
+
+pkgname=kubescape
+pkgver=2.2.6
+pkgrel=0
+epoch=0
+pkgdesc="An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
+arch=('x86_64' 'arm' 'armv6h' 'armv7h' 'aarch64' 'i686' 'pentium4')
+url="https://github.com/kubescape/kubescape"
+license=('Apache-2.0')
+makedepends=('go>=2:1.19.0' 'pkg-config' 'cmake' 'make')
+provides=('kubescape')
+conflicts=('kubescape-bin')
+source=("${pkgname}_${pkgver}.tar.xz")
+sha512sums=('SKIP')
+build() {
+  cd deb
+  export GOVERSION_MAJOR=$(go version | cut -f1 -d. | cut -f4 -do)
+  export GOVERSION_MINOR=$(go version | cut -f2 -d. | cut -f1 -d' ')
+  # Use our go compiler if golang version is less than 1.19
+  if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 19 ]]; then
+    export GOROOT=$(pwd)/golang
+    export PATH=${GOROOT}/bin:$PATH
+    cd golang/src; bash ./make.bash; cd ../..
+  fi
+  export CGO_ENABLED=1
+  cd ${pkgname}/git2go; make install-static; cd ..
+  cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
+  go version
+  go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/${pkgname}/v2/core/cautils.BuildNumber=v${pkgver}" -tags=static,gitenabled -o ${pkgname}
+
+}
+
+check() {
+  # check that binary includes pkgver and git enabled
+  if [ "$(./deb/${pkgname}/${pkgname} version)" != "Your current version is: v${pkgver} [git enabled in build: true]" ]; then
+    exit 1
+  fi
+}
+
+package() {
+  cd "deb/${pkgname}"
+  # Bash autocomplete file
+  ./${pkgname} completion bash > ${pkgname}-autocomplete.sh
+  install -Dm644 ${pkgname}-autocomplete.sh ${pkgdir}/usr/share/bash-completion/completions/${pkgname}
+
+  # Zsh autocomplete file
+  ./${pkgname} completion zsh > ${pkgname}-autocomplete.sh
+  install -Dm644 ${pkgname}-autocomplete.sh ${pkgdir}/usr/share/zsh/vendor-completions/_${pkgname}
+
+  # Fish autocomplete file
+  ./${pkgname} completion fish > ${pkgname}-autocomplete.sh
+  install -Dm644 ${pkgname}-autocomplete.sh ${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish
+  
+  install -Dm755 ${pkgname} ${pkgdir}/usr/bin/${pkgname}
+
+  # docs
+  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  cp -a docs -t "${pkgdir}/usr/share/doc/${pkgname}"
+}

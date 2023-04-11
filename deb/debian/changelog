@@ -1,40 +1,40 @@
-kubescape (2.2.6) kinetic; urgency=medium
+kubescape (2.2.6) jammy; urgency=medium
 
   * v2.2.6: Update
 
  -- Hollow Man <hollowman@opensuse.org>  Mon, 03 Apr 2023 18:24:16 +0000
 
-kubescape (2.2.5) kinetic; urgency=medium
+kubescape (2.2.5) jammy; urgency=medium
 
   * v2.2.5: Update
 
  -- Hollow Man <hollowman@opensuse.org>  Fri, 24 Mar 2023 08:06:10 +0000
 
-kubescape (2.2.4) kinetic; urgency=medium
+kubescape (2.2.4) jammy; urgency=medium
 
   * v2.2.4: Update
 
  -- Hollow Man <hollowman@opensuse.org>  Sat, 11 Mar 2023 14:25:12 +0000
 
-kubescape (2.2.2) kinetic; urgency=medium
+kubescape (2.2.2) jammy; urgency=medium
 
   * v2.2.2: Upgrade with patches
 
  -- Hollow Man <hollowman@opensuse.org>  Sun, 26 Feb 2023 20:58:32 +0200
 
-kubescape (2.2.1) kinetic; urgency=medium
+kubescape (2.2.1) jammy; urgency=medium
 
   * v2.2.1: Upgrade
 
  -- Hollow Man <hollowman@opensuse.org>  Thu, 23 Feb 2023 19:18:16 +0200
 
-kubescape (2.2.0) kinetic; urgency=medium
+kubescape (2.2.0) jammy; urgency=medium
 
   * v2.2.0: New control statuses (https://github.com/kubescape/kubescape/pull/1016)
 
  -- Hollow Man <hollowman@opensuse.org>  Wed, 15 Feb 2023 14:33:28 +0200
 
-kubescape (2.1.3) kinetic; urgency=medium
+kubescape (2.1.3) jammy; urgency=medium
 
   * v2.1.3: Init Debian package.
 
