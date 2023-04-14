@@ -129,8 +129,8 @@ jobs:
           rm kubescape*
           mv ../../kubescape.spec .
           mv ../../PKGBUILD_obs PKGBUILD
-          VERSION=$(cat kubescape_full.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
-          RELEASE=$(cat kubescape_full.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
+          VERSION=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
+          RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
           mv ../../kubescape_${VERSION}.dsc .
           mv ../../kubescape_${VERSION}.tar.xz .
           osc addremove *

@@ -15,6 +15,7 @@ if [ "$LATEST" != "$CURRENT" ]; then
     rm kubescape-${LATEST}.tar.gz
     sed -i "s/$CURRENTSHA512/$NEWSHA512/g" PKGBUILD
     sed -i "s/pkgver=$CURRENT/pkgver=$LATEST/g" PKGBUILD*
+    sed -i "s/pkgrel=.*/pkgrel=0/g" PKGBUILD*
     sed -i "s/Version:        $CURRENT/Version:        $LATEST/g" kubescape*.spec
     sed -i "s/Release:.*/Release:        0/g" kubescape*.spec
     sed -i "s/%changelog/%changelog\n* $(date +"%a %b %d %Y") github-actions[bot] <github-actions[bot]@users.noreply.github.com> - $LATEST\n- Update to $LATEST\n/g" kubescape*.spec
