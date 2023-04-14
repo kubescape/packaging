@@ -1,5 +1,5 @@
 #
-# spec file for building package kubescape in openSUSE Build Service (OBS)
+# spec file for package kubescape
 #
 # Copyright (c) 2023 The Kubescape Authors
 #
@@ -25,8 +25,10 @@ Summary:        CLI interface of a Kubernetes security platform
 License:        Apache-2.0
 Group:          Development/Tools/Other
 URL:            https://github.com/kubescape/%{name}
-Source0:        %{name}_%{version}.tar.xz
-BuildRequires:  golang
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source1:        https://github.com/libgit2/git2go/archive/v%{git2go_version}/git2go-%{git2go_version}.tar.gz
+Source2:        https://github.com/libgit2/libgit2/archive/v%{libgit2_version}/libgit2-%{libgit2_version}.tar.gz
+BuildRequires:  golang >= 1.19
 BuildRequires:  pkg-config
 BuildRequires:  cmake
 
@@ -68,25 +70,20 @@ BuildArch:      noarch
 The official fish completion script for %{name}, generated during the build.
 
 %prep
-%setup -q -n deb
+%setup -q -n %{name}-%{version}
+%setup -q -T -D -a 1
+%setup -q -T -D -a 2
+rm -rf git2go && mv git2go-%{git2go_version} git2go
+rm -rf git2go/vendor/libgit2 && mv libgit2-%{libgit2_version} git2go/vendor/libgit2
 
 %build
-export GOVERSION_MAJOR=$(go version | cut -f1 -d. | cut -f4 -do)
-export GOVERSION_MINOR=$(go version | cut -f2 -d. | cut -f1 -d' ')
-# Use our go compiler if golang version is less than 1.19
-if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 19 ]]; then
-  export GOROOT=$(pwd)/golang
-  export PATH=${GOROOT}/bin:$PATH
-  cd golang/src; bash ./make.bash; cd ../..
-fi
 export CGO_ENABLED=1
-cd %{name}/git2go; make install-static; cd ..
-cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
-go version
-go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+export GOCACHE=${PWD}/../../../cache
+cd git2go; make install-static; cd ..
+go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
 
 %install
-install -Dpm 0755 %{name}/%{name} %{buildroot}%{_bindir}/%{name}
+install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
 
 # Bash autocomplete file
 %{buildroot}/%{_bindir}/%{name} completion bash > %{name}-autocomplete.sh
@@ -104,8 +101,8 @@ install -Dm 644 %{name}-autocomplete.sh %{buildroot}%{_datadir}/fish/vendor_comp
 if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%{version} [git enabled in build: true]" ]; then exit 1; fi
 
 %files
-%license %{name}/LICENSE
-%doc %{name}/README.md
+%license LICENSE
+%doc README.md
 %{_bindir}/%{name}
 
 %files bash-completion

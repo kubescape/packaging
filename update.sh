@@ -4,8 +4,8 @@ VLATEST=$(git describe --tags --abbrev=0)
 cd ..
 rm -rf kubescape
 export LATEST=${VLATEST:1}
-export RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
-export CURRENT=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
+export RELEASE=$(cat kubescape_full.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
+export CURRENT=$(cat kubescape_full.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
 UBUNTU="jammy"
 if [ "$LATEST" != "$CURRENT" ]; then
     echo "New version available: $LATEST"

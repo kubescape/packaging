@@ -8,14 +8,24 @@ ifndef VERSION
 endif
 
 ifndef GIT2GO_VERSION
-	GIT2GO_VERSION = $(shell cat kubescape.spec | grep "global git2go_version" | cut -d' ' -f3)
+	GIT2GO_VERSION = $(shell cat kubescape_full.spec | grep "global git2go_version" | cut -d' ' -f3)
 endif
 
 ifndef LIBGIT2_VERSION
-	LIBGIT2_VERSION = $(shell cat kubescape.spec | grep "global libgit2_version" | cut -d' ' -f3)
+	LIBGIT2_VERSION = $(shell cat kubescape_full.spec | grep "global libgit2_version" | cut -d' ' -f3)
 endif
 
-export GOVERSION=1.19.7
+ifndef RPM_SPEC
+	RPM_SPEC = kubescape_full.spec
+endif
+
+ifndef PACK_GO
+	PACK_GO = YES
+endif
+
+ifndef GOVERSION
+	GOVERSION = 1.19.7
+endif
 export GOCACHE=$(PWD)/cache
 
 clean:
@@ -51,18 +61,26 @@ prepare:
 		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
 prepare-go-$(GOVERSION):
-	rm -rf $(path)/golang $(path)/go-go*
-	curl --output go.src.tar.gz -L https://github.com/golang/go/archive/refs/tags/go$(GOVERSION).tar.gz
-	cd $(path); tar -xf ../go.src.tar.gz; mv go-go$(GOVERSION) golang
+	if [ "$(PACK_GO)" = "YES" ]; then \
+		rm -rf $(path)/golang $(path)/go-go*; \
+		curl --output go.src.tar.gz -L https://github.com/golang/go/archive/refs/tags/go$(GOVERSION).tar.gz; \
+		cd $(path); tar -xf ../go.src.tar.gz; mv go-go$(GOVERSION) golang; \
+	fi
 
 vendor: clean prepare prepare-go-$(GOVERSION)
 	cd $(path)/kubescape; go mod vendor; go generate -mod vendor ./...
 	cd $(path)/kubescape/git2go; go mod vendor; go generate -mod vendor ./...; mv libgit2 vendor
 	sed -i 's/go install /go install -mod vendor /' $(path)/kubescape/git2go/Makefile
 
-deb: path:=deb
-deb: vendor
+deb-ready:
 	cd $(path); dpkg-buildpackage -F -d;
+
+deb: path:=deb
+deb: vendor deb-ready
+
+pack: path:=deb
+pack: vendor
+	tar -cJf kubescape_$(VERSION).tar.xz $(path)
 
 dsc: path:=deb
 dsc: vendor
@@ -83,4 +101,4 @@ rpmdir:
 	mkdir -p rpmbuild/SRPMS
 
 rpm: rpmdir
-	rpmbuild --undefine=_disable_source_fetch -ba kubescape.spec -D "_topdir $(PWD)/rpmbuild" -D 'debug_package %{nil}'
+	rpmbuild --undefine=_disable_source_fetch -ba $(RPM_SPEC) -D "_topdir $(PWD)/rpmbuild" -D 'debug_package %{nil}'

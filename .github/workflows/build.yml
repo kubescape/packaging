@@ -12,10 +12,15 @@ on:
 
 env:
   GO_VERSION: 1.19
+  GPG_OWNER_TRUST: "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
 
 jobs:
   debian:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [amd64, arm64]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -23,75 +28,55 @@ jobs:
       - name: Cache Go modules
         uses: actions/cache@v3
         with:
-          path: cache
-          key: deb-amd64-go-${{ hashFiles('**/*.spec') }}
-          restore-keys: deb-amd64-go-
+          path: |
+            cache
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go
+          restore-keys: |
+            ${{ runner.os }}-go
       - uses: actions/setup-go@v3
         name: Installing go
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Install Dependencies
+      - name: start ${{ matrix.platform }} environment in container
+        if: matrix.platform != 'amd64'
         run: |
           sudo apt update
-          sudo apt install -y debhelper golang-golang-x-tools cmake
-      - name: Setup PGP
-        env:
-          PGP: ${{ secrets.PGP }}
-        if: env.PGP != null
-        run: |
-          echo "${{ env.PGP }}" >> secret.gpg
-          gpg --import secret.gpg
-          gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
-          gpg --list-keys
-        shell: bash
-      - name: Build
-        run: |
-          make deb
-          mkdir upload
-          mv kubescape_*.dsc upload
-          mv kubescape_*.tar.xz upload
-          mv kubescape_*.deb upload
-      - name: Upload Debian Package Files to Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: kubescape_debian_amd64
-          path: upload/*
-  debian-arm64:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: cache
-          key: deb-arm64-go-${{ hashFiles('**/*.spec') }}
-          restore-keys: deb-arm64-go-
-      - name: Start packaging environment in container
-        run: |
           sudo apt-get install -y binfmt-support qemu-user-static
-          sudo docker run --platform linux/arm64 -v ${PWD}:/work -w /work -d --name debbuild golang:${{ env.GO_VERSION }}-bullseye sleep 21600
-          sudo docker exec debbuild apt update
-          sudo docker exec debbuild apt install -y debhelper golang-golang-x-tools cmake gpg
+          sudo docker run --platform linux/${{ matrix.platform }} -v ${PWD}:/work -w /work -d --name debbuild golang:${{ env.GO_VERSION }}-bullseye sleep 21600
+          DOCKER_CMD="sudo docker exec debbuild"
+          ${DOCKER_CMD} apt update
+          ${DOCKER_CMD} apt install -y sudo gpg
+          echo "DOCKER_CMD=${DOCKER_CMD}" >> $GITHUB_ENV;
+      - name: Install Dependencies
+        run: |
+          ${{ env.DOCKER_CMD }} sudo apt update
+          ${{ env.DOCKER_CMD }} sudo apt install -y debhelper golang-golang-x-tools cmake
       - name: Setup PGP
         env:
           PGP: ${{ secrets.PGP }}
         if: env.PGP != null
         run: |
           echo "${{ env.PGP }}" >> secret.gpg
-          sudo docker exec debbuild gpg --import secret.gpg
-          sudo docker exec debbuild gpg --import-ownertrust <<< "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
-          sudo docker exec debbuild gpg --list-keys
+          ${{ env.DOCKER_CMD }} gpg --import secret.gpg
+          rm secret.gpg
+          ${{ env.DOCKER_CMD }} gpg --import-ownertrust <<< "${{ env.GPG_OWNER_TRUST }}"
+          ${{ env.DOCKER_CMD }} gpg --list-keys
         shell: bash
       - name: Build
         run: |
-          sudo docker exec debbuild make deb
+          make vendor path=deb
+          ${{ env.DOCKER_CMD }} make deb-ready path=deb
+          mkdir upload
+          cp kubescape_*.dsc upload
+          cp kubescape_*.tar.xz upload
+          cp kubescape_*.deb upload
       - name: Upload Debian Package Files to Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: kubescape_debian_arm64
-          path: kubescape_*.deb
+          name: kubescape_debian_${{ matrix.platform }}
+          path: upload/*
   rpm:
     runs-on: ubuntu-latest
     strategy:
@@ -105,17 +90,32 @@ jobs:
       - name: Cache Go modules
         uses: actions/cache@v3
         with:
-          path: cache
-          key: rpm-${{ matrix.platform }}-go-${{ hashFiles('**/*.spec') }}
-          restore-keys: rpm-${{ matrix.platform }}-go-
+          path: |
+            cache
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go
+          restore-keys: |
+            ${{ runner.os }}-go
+      - uses: actions/setup-go@v3
+        name: Installing go
+        with:
+          go-version: ${{ env.GO_VERSION }}
       - name: Start packaging environment in container
         run: |
-          sudo apt-get install -y binfmt-support qemu-user-static
+          sudo apt update
+          sudo apt-get install -y binfmt-support qemu-user-static golang-golang-x-tools cmake
           sudo docker run --platform linux/${{ matrix.platform }} -v ${PWD}:/work -w /work -d --name rpmbuild fedora sleep 21600
-          sudo docker exec rpmbuild dnf update -y
-          sudo docker exec rpmbuild dnf install golang cmake rpmdevtools -y
+          DOCKER_CMD="sudo docker exec rpmbuild"
+          ${DOCKER_CMD} dnf update -y
+          ${DOCKER_CMD} dnf install golang cmake rpmdevtools -y
+          echo "DOCKER_CMD=${DOCKER_CMD}" >> $GITHUB_ENV;
       - name: Build
-        run: sudo docker exec rpmbuild make rpm PWD=/work
+        run: |
+          make pack PACK_GO=NO path=deb
+          make rpmdir
+          mv kubescape_*.tar.xz rpmbuild/SOURCES
+          ${{ env.DOCKER_CMD }} make rpm PWD=/work RPM_SPEC=kubescape.spec
       - name: Upload RPM Package File to Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -128,24 +128,22 @@ jobs:
       needrelease: ${{ steps.CHECKER.outputs.needrelease }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-          submodules: 'recursive'
       - id: CHECKER
         run: |
+          git clone https://github.com/${{ github.repository }} pack; cd pack
           CURRENT=$(git describe --tags --abbrev=0 || true)
-          LATEST=$(cat kubescape.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
-          RELEASE=$(cat kubescape.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
+          LATEST=$(cat kubescape_full.spec | grep "Version:" | tr -s ' ' | cut -d' ' -f2)
+          RELEASE=$(cat kubescape_full.spec | grep "Release:" | tr -s ' ' | cut -d' ' -f2)
           echo "latest=${LATEST}" >> $GITHUB_OUTPUT
           echo "release=${RELEASE}" >> $GITHUB_OUTPUT
+          echo "${CURRENT}, ${LATEST}"
           if [ "v$LATEST" != "$CURRENT" ]; then echo "needrelease=true" >> $GITHUB_OUTPUT; fi
   release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    needs: [release-checker, debian, debian-arm64, rpm]
-    if: needs.release-checker.outputs.needrelease == 'true'
+    needs: [release-checker, debian, rpm]
+    if: needs.release-checker.outputs.needrelease == 'true' && github.repository_owner == 'kubescape'
     steps:
       - uses: actions/download-artifact@v3
         id: download-artifact
