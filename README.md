@@ -29,12 +29,10 @@ yay -S kubescape
 [Instructions for package managers](https://software.opensuse.org/download.html?project=home%3Akubescape&package=kubescape) 
 
 ### [Snap](snap)
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/cli-kubescape)
-
-> Note: If installed using snap, the executable is called `cli-kubescape` and not `kubescape`.
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/kubescape)
 
 ```bash
-sudo snap install cli-kubescape --classic
+sudo snap install kubescape --classic
 ```
 
 ### Manually

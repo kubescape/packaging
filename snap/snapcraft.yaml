@@ -1,9 +1,9 @@
-name: cli-kubescape
+name: kubescape
 base: core22
 version: '2.2.6'
 summary: "Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
 description: |
-  **Usage**: `$ cli-kubescape scan --enable-host-scan --verbose`
+  **Usage**: `$ kubescape scan --enable-host-scan --verbose`
 
   Learn more at: https://github.com/kubescape/kubescape/blob/master/docs/getting-started.md#run-your-first-scan
 
@@ -82,11 +82,10 @@ parts:
         exit 1; \
       fi
       $EXEC completion bash > ${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}.completer
-      sed -i s/kubescape/${SNAPCRAFT_PROJECT_NAME}/g ${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}.completer
       cd ${SNAPCRAFT_PART_BUILD}
       rm -rf ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}
 
-# # snap connect cli-kubescape:kubenetes-config
+# # snap connect kubescape:kubenetes-config
 # plugs:
 #   kubenetes-config:
 #     interface: personal-files
@@ -94,7 +93,7 @@ parts:
 #     - $HOME/.kube
 
 apps:
-  cli-kubescape:
+  kubescape:
     command: ${SNAPCRAFT_PROJECT_NAME}
     completer: ${SNAPCRAFT_PROJECT_NAME}.completer
     # plugs:
