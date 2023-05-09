@@ -1,3 +1,9 @@
+kubescape (2.3.1) jammy; urgency=medium
+
+  * v2.3.1: Update
+
+ -- Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io>  Tue, 09 May 2023 20:32:35 +0000
+
 kubescape (2.2.6) jammy; urgency=medium
 
   * v2.2.6: Update
