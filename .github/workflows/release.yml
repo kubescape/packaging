@@ -9,7 +9,7 @@ on:
 
 env:
   GO_VERSION: 1.19
-  GPG_OWNER_TRUST: "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
+  GPG_OWNER_TRUST: "D35930F2533C516BD2863BD7F03CFCB8B3E73F87:6:"
 
 jobs:
   check-secret:
@@ -36,8 +36,8 @@ jobs:
     steps:
       - name: Set release token
         run: |
-          if [ "${{ secrets.PAT }}" != "" ]; then
-            echo "TOKEN=${{ secrets.PAT }}" >> $GITHUB_ENV;
+          if [ "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" != "" ]; then
+            echo "TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV;
           else
             echo "TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV;
           fi
@@ -51,7 +51,7 @@ jobs:
           if [ "$LATEST" == "$CURRENT" ]; then echo "release=release $((RELEASE+1))" >> $GITHUB_ENV; fi
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          commit_author: Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io>
           commit_message: Bump version into ${{ env.version }} ${{ env.release }}
   aur:
     runs-on: ubuntu-latest
@@ -73,8 +73,8 @@ jobs:
         with:
           pkgname: kubescape
           pkgbuild: ./PKGBUILD
-          commit_username: github-actions[bot]
-          commit_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_username: Kubescape Maintainers
+          commit_email: cncf-kubescape-maintainers@lists.cncf.io
           ssh_private_key: ${{ secrets.SSH }}
           commit_message: Bump kubescape version into ${{ env.version }} ${{ env.release }}
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
@@ -105,12 +105,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y osc debhelper golang-golang-x-tools cmake
-      - name: Setup PGP
+      - name: Setup GPG
         env:
-          PGP: ${{ secrets.PGP }}
-        if: env.PGP != null
+          GPG: ${{ secrets.GPG }}
+        if: env.GPG != null
         run: |
-          echo "${{ env.PGP }}" >> secret.gpg
+          echo "${{ env.GPG }}" >> secret.gpg
           gpg --import secret.gpg
           rm secret.gpg
           gpg --import-ownertrust <<< "${{ env.GPG_OWNER_TRUST }}"
@@ -167,12 +167,12 @@ jobs:
           sudo apt update
           sudo apt install -y debhelper dput golang-golang-x-tools cmake python3-paramiko
           mv .dput.cf ~
-      - name: Setup PGP
+      - name: Setup GPG
         env:
-          PGP: ${{ secrets.PGP }}
-        if: env.PGP != null
+          GPG: ${{ secrets.GPG }}
+        if: env.GPG != null
         run: |
-          echo "${{ env.PGP }}" >> secret.gpg
+          echo "${{ env.GPG }}" >> secret.gpg
           gpg --import secret.gpg
           rm secret.gpg
           gpg --import-ownertrust <<< "${{ env.GPG_OWNER_TRUST }}"

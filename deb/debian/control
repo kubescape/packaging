@@ -1,7 +1,7 @@
 Source: kubescape
 Section: devel
 Priority: optional
-Maintainer: Hollow Man <hollowman@opensuse.org>
+Maintainer: Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io>
 Build-Depends: golang, cmake, pkg-config, debhelper
 Standards-Version: 2.2.6
 Homepage: https://github.com/kubescape/kubescape

@@ -1,4 +1,7 @@
 # kubescape Packaging
+
+[![build result](https://build.opensuse.org/projects/home:kubescape/packages/kubescape/badge.svg?type=percent)](https://build.opensuse.org/package/show/home:kubescape/kubescape)
+
 [![Version](https://img.shields.io/github/v/release/kubescape/packaging)](https://github.com/kubescape/packaging/releases)
 [![Build deb or rpm packages](https://github.com/kubescape/packaging/actions/workflows/build.yml/badge.svg)](https://github.com/kubescape/packaging/actions/workflows/build.yml)
 [![Release with upstream](https://github.com/kubescape/packaging/actions/workflows/release.yml/badge.svg)](https://github.com/kubescape/packaging/actions/workflows/release.yml)
@@ -37,17 +40,17 @@ sudo snap install kubescape --classic
 
 ### Manually
 Get the latest debian or [rpm](kubescape.spec) package from the [Release Assets](https://github.com/kubescape/packaging/releases):
-- `kubescape-2.2.6-0.aarch64.rpm`: Kubescape rpm package for arm64 (aarch64)
-- `kubescape-2.2.6-0.x86_64.rpm`: Kubescape rpm package for amd64 (x86_64)
-- `kubescape-bash-completion-2.2.6-0.noarch.rpm`: Kubescape bash auto completion rpm package
-- `kubescape-fish-completion-2.2.6-0.noarch.rpm`: Kubescape fish auto completion rpm package
-- `kubescape-zsh-completion-2.2.6-0.noarch.rpm`: Kubescape zsh auto completion rpm package
-- `kubescape_2.2.6.dsc`: Debian Signed Kubescape source package description
-- `kubescape_2.2.6.tar.xz`: Debian Kubescape vendored source package + golang compiler source package
-- `kubescape_2.2.6_amd64.deb`: Kubescape rpm package for amd64 (x86_64)
-- `kubescape_2.2.6_arm64.deb`: Kubescape debian package for arm64 (aarch64)
+- `kubescape-<version>-0.aarch64.rpm`: Kubescape rpm package for arm64 (aarch64)
+- `kubescape-<version>-0.x86_64.rpm`: Kubescape rpm package for amd64 (x86_64)
+- `kubescape-bash-completion-<version>-0.noarch.rpm`: Kubescape bash auto completion rpm package
+- `kubescape-fish-completion-<version>-0.noarch.rpm`: Kubescape fish auto completion rpm package
+- `kubescape-zsh-completion-<version>-0.noarch.rpm`: Kubescape zsh auto completion rpm package
+- `kubescape_<version>.dsc`: Debian Signed Kubescape source package description
+- `kubescape_<version>.tar.xz`: Debian Kubescape vendored source package + golang compiler source package
+- `kubescape_<version>_amd64.deb`: Kubescape rpm package for amd64 (x86_64)
+- `kubescape_<version>_arm64.deb`: Kubescape debian package for arm64 (aarch64)
 
-Or from the latest [GitHub Actions Workflow](https://github.com/HollowMan6/kubescape-deb-rpm/actions/workflows/build.yml) Artifacts and unzip:
+Or from the latest [GitHub Actions Workflow](https://github.com/kubescape/packaging/actions/workflows/build.yml) Artifacts and unzip:
 
 - `kubescape_deb_amd64.zip`: Kubescape debian package for amd64 (x86_64)
 - `kubescape_deb_arm64.zip`: Kubescape debian package for arm64 (aarch64)

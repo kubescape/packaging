@@ -2,5 +2,5 @@
 fqdn = ppa.launchpad.net
 method = sftp
 incoming = ~kubescape/ubuntu/kubescape/
-login = hollowman86
+login = kubescape-maintainers
 allow_unsigned_uploads = 0

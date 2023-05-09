@@ -12,7 +12,7 @@ on:
 
 env:
   GO_VERSION: 1.19
-  GPG_OWNER_TRUST: "5EAC9FF1F66A043E442D91C8D1EA5D5F3FB99300:6:"
+  GPG_OWNER_TRUST: "D35930F2533C516BD2863BD7F03CFCB8B3E73F87:6:"
 
 jobs:
   debian:
@@ -53,12 +53,12 @@ jobs:
         run: |
           ${{ env.DOCKER_CMD }} sudo apt update
           ${{ env.DOCKER_CMD }} sudo apt install -y debhelper golang-golang-x-tools cmake
-      - name: Setup PGP
+      - name: Setup GPG
         env:
-          PGP: ${{ secrets.PGP }}
-        if: env.PGP != null
+          GPG: ${{ secrets.GPG }}
+        if: env.GPG != null
         run: |
-          echo "${{ env.PGP }}" >> secret.gpg
+          echo "${{ env.GPG }}" >> secret.gpg
           ${{ env.DOCKER_CMD }} gpg --import secret.gpg
           rm secret.gpg
           ${{ env.DOCKER_CMD }} gpg --import-ownertrust <<< "${{ env.GPG_OWNER_TRUST }}"

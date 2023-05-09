@@ -115,23 +115,23 @@ if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%
 %{_datadir}/fish
 
 %changelog
-* Mon Apr 03 2023 github-actions[bot] <github-actions[bot]@users.noreply.github.com> - 2.2.6
+* Mon Apr 03 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.2.6
 - Update to 2.2.6
 
-* Fri Mar 24 2023 github-actions[bot] <github-actions[bot]@users.noreply.github.com> - 2.2.5
+* Fri Mar 24 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.2.5
 - Update to 2.2.5
 
-* Sat Mar 11 2023 github-actions[bot] <github-actions[bot]@users.noreply.github.com> - 2.2.4
+* Sat Mar 11 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.2.4
 - Update to 2.2.4
 
-* Sun Feb 26 2023 Hollow Man <hollowman@opensuse.org> - 2.2.2
+* Sun Feb 26 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.2.2
 - Upgrade with patches
 
-* Thu Feb 23 2023 Hollow Man <hollowman@opensuse.org> - 2.2.1
+* Thu Feb 23 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.2.1
 - Upgrade
 
-* Wed Feb 15 2023 Hollow Man <hollowman@opensuse.org> - 2.2.0
+* Wed Feb 15 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.2.0
 - New control statuses (https://github.com/kubescape/kubescape/pull/1016)
 
-* Fri Feb 10 2023 Hollow Man <hollowman@opensuse.org> - 2.1.3
+* Fri Feb 10 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.1.3
 - Init kubescape package
