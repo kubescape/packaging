@@ -1,6 +1,6 @@
 name: kubescape
 base: core22
-version: '2.3.3'
+version: '2.3.4'
 summary: "Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
 description: |
   **Usage**: `$ kubescape scan --enable-host-scan --verbose`
