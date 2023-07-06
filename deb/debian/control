@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io>
 Build-Depends: golang, cmake, pkg-config, debhelper
-Standards-Version: 2.3.6
+Standards-Version: 2.3.7
 Homepage: https://github.com/kubescape/kubescape
 
 Package: kubescape

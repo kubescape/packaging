@@ -1,7 +1,7 @@
 # Maintainer: Kubescape Maintainers <cncf hyphen kubescape hyphen maintainers at lists dot cncf dot io>
 
 pkgname=kubescape
-pkgver=2.3.6
+pkgver=2.3.7
 pkgrel=0
 epoch=0
 pkgdesc="An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
