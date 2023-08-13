@@ -19,7 +19,7 @@
 %global git2go_version 33.0.9
 %global libgit2_version 1.3.0
 Name:           kubescape
-Version:        2.3.8
+Version:        2.9.0
 Release:        0
 Summary:        CLI interface of a Kubernetes security platform
 License:        Apache-2.0
@@ -118,6 +118,9 @@ if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%
 %{_datadir}/fish
 
 %changelog
+* Sun Aug 13 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.9.0
+- Update to 2.9.0
+
 * Tue Jul 25 2023 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 2.3.8
 - Update to 2.3.8
 
