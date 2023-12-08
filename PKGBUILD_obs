@@ -27,7 +27,7 @@ build() {
   cd ${pkgname}/git2go; make install-static; cd ..
   cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
   go version
-  go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/${pkgname}/v2/core/cautils.BuildNumber=v${pkgver}" -tags=static,gitenabled -o ${pkgname}
+  go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/${pkgname}/v3/core/cautils.BuildNumber=v${pkgver}" -tags=static,gitenabled -o ${pkgname}
 
 }
 

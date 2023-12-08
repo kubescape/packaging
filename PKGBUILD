@@ -29,7 +29,7 @@ build() {
   export CGO_ENABLED=1
   export GOCACHE=${PWD}/cache
   cd ${pkgname}-${pkgver}/git2go; make install-static; cd ..
-  go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/${pkgname}/${pkgname}/v2/core/cautils.BuildNumber=v${pkgver}" -tags=static,gitenabled -o ${pkgname}
+  go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/${pkgname}/${pkgname}/v3/core/cautils.BuildNumber=v${pkgver}" -tags=static,gitenabled -o ${pkgname}
 }
 
 check() {

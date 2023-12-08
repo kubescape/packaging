@@ -83,7 +83,7 @@ export CGO_ENABLED=1
 cd %{name}/git2go; make install-static; cd ..
 cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
 go version
-go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v2/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v3/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
 
 %install
 install -Dpm 0755 %{name}/%{name} %{buildroot}%{_bindir}/%{name}
