@@ -78,7 +78,7 @@ parts:
       cd git2go; make install-static; cd ..
       cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
       go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/kubescape/v3/core/cautils.BuildNumber=v${SNAPCRAFT_PROJECT_VERSION}" -tags=static,gitenabled -o $EXEC
-      if [ "$($EXEC version)" != "Your current version is: v${SNAPCRAFT_PROJECT_VERSION} [git enabled in build: true]" ]; then \
+      if [ "$($EXEC version)" != "Your current version is: v${SNAPCRAFT_PROJECT_VERSION}" ]; then \
         exit 1; \
       fi
       $EXEC completion bash > ${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}.completer

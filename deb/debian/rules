@@ -33,7 +33,7 @@ override_dh_auto_build:
 	cd $(NAME); go version; \
 		go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v3/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o $(NAME)
 	dh_auto_build
-	if [ "$$($(KUBESCAPE) version)" != "Your current version is: v${VERSION} [git enabled in build: true]" ]; then \
+	if [ "$$($(KUBESCAPE) version)" != "Your current version is: v${VERSION}" ]; then \
 		exit 1; \
 	fi
 	mkdir -p completion

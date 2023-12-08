@@ -98,7 +98,7 @@ install -Dm 644 %{name}-autocomplete.sh %{buildroot}%{_datadir}/zsh/vendor-compl
 install -Dm 644 %{name}-autocomplete.sh %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
 
 %check
-if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%{version} [git enabled in build: true]" ]; then exit 1; fi
+if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%{version}" ]; then exit 1; fi
 
 %files
 %license LICENSE

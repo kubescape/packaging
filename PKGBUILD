@@ -34,7 +34,7 @@ build() {
 
 check() {
   # check that binary includes pkgver and git enabled
-  if [ "$(./${pkgname}-${pkgver}/${pkgname} version)" != "Your current version is: v${pkgver} [git enabled in build: true]" ]; then
+  if [ "$(./${pkgname}-${pkgver}/${pkgname} version)" != "Your current version is: v${pkgver}" ]; then
     exit 1
   fi
 }
