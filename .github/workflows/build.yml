@@ -11,7 +11,7 @@ on:
     branches: [ main ]
 
 env:
-  GO_VERSION: 1.19
+  GO_VERSION: 1.21
   GPG_OWNER_TRUST: "D35930F2533C516BD2863BD7F03CFCB8B3E73F87:6:"
 
 jobs:

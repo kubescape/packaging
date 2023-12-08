@@ -24,7 +24,7 @@ ifndef PACK_GO
 endif
 
 ifndef GOVERSION
-	GOVERSION = 1.19.7
+	GOVERSION = 1.20.12
 endif
 export GOCACHE=$(PWD)/cache
 

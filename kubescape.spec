@@ -73,8 +73,8 @@ The official fish completion script for %{name}, generated during the build.
 %build
 export GOVERSION_MAJOR=$(go version | cut -f1 -d. | cut -f4 -do)
 export GOVERSION_MINOR=$(go version | cut -f2 -d. | cut -f1 -d' ')
-# Use our go compiler if golang version is less than 1.19
-if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 19 ]]; then
+# Use our go compiler if golang version is less than 1.20
+if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 20 ]]; then
   export GOROOT=$(pwd)/golang
   export PATH=${GOROOT}/bin:$PATH
   cd golang/src; bash ./make.bash; cd ../..

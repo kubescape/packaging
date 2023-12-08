@@ -10,7 +10,7 @@ pkgdesc="An open-source Kubernetes security platform for your IDE, CI/CD pipelin
 arch=('x86_64' 'arm' 'armv6h' 'armv7h' 'aarch64' 'i686' 'pentium4')
 url="https://github.com/kubescape/kubescape"
 license=('Apache-2.0')
-makedepends=('go>=2:1.19.0' 'pkg-config' 'cmake' 'make')
+makedepends=('go>=2:1.20.0' 'pkg-config' 'cmake' 'make')
 provides=('kubescape')
 conflicts=('kubescape-bin')
 source=("https://github.com/${pkgname}/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"

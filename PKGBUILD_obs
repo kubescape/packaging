@@ -8,7 +8,7 @@ pkgdesc="An open-source Kubernetes security platform for your IDE, CI/CD pipelin
 arch=('x86_64' 'arm' 'armv6h' 'armv7h' 'aarch64' 'i686' 'pentium4')
 url="https://github.com/kubescape/kubescape"
 license=('Apache-2.0')
-makedepends=('go>=2:1.19.0' 'pkg-config' 'cmake' 'make')
+makedepends=('go>=2:1.20.0' 'pkg-config' 'cmake' 'make')
 provides=('kubescape')
 conflicts=('kubescape-bin')
 source=("${pkgname}_${pkgver}.tar.xz")
@@ -17,8 +17,8 @@ build() {
   cd deb
   export GOVERSION_MAJOR=$(go version | cut -f1 -d. | cut -f4 -do)
   export GOVERSION_MINOR=$(go version | cut -f2 -d. | cut -f1 -d' ')
-  # Use our go compiler if golang version is less than 1.19
-  if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 19 ]]; then
+  # Use our go compiler if golang version is less than 1.20
+  if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 20 ]]; then
     export GOROOT=$(pwd)/golang
     export PATH=${GOROOT}/bin:$PATH
     cd golang/src; bash ./make.bash; cd ../..
