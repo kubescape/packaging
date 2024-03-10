@@ -2,7 +2,7 @@
 
 pkgname=kubescape
 pkgver=3.0.4
-pkgrel=0
+pkgrel=1
 epoch=0
 pkgdesc="An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters."
 arch=('x86_64' 'arm' 'armv6h' 'armv7h' 'aarch64' 'i686' 'pentium4')

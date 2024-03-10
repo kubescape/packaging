@@ -18,7 +18,7 @@
 
 Name:           kubescape
 Version:        3.0.4
-Release:        0
+Release:        1
 Summary:        CLI interface of a Kubernetes security platform
 License:        Apache-2.0
 Group:          Development/Tools/Other
