@@ -36,11 +36,11 @@ jobs:
     steps:
       - name: Set release token
         run: |
-          if [ "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" != "" ]; then
-            echo "TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV;
-          else
-            echo "TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV;
-          fi
+          # if [ "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" != "" ]; then
+          #  echo "TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV;
+          # else
+              echo "TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV;
+          # fi
       - uses: actions/checkout@v4
         with:
           token: ${{ env.TOKEN }}
