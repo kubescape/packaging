@@ -8,7 +8,7 @@ pkgdesc="An open-source Kubernetes security platform for your IDE, CI/CD pipelin
 arch=('x86_64' 'arm' 'armv6h' 'armv7h' 'aarch64' 'i686' 'pentium4')
 url="https://github.com/kubescape/kubescape"
 license=('Apache-2.0')
-makedepends=('go>=2:1.20.0' 'pkg-config' 'cmake' 'make')
+makedepends=('go>=2:1.20.0')
 provides=('kubescape')
 conflicts=('kubescape-bin')
 source=("${pkgname}_${pkgver}.tar.xz")
@@ -23,11 +23,8 @@ build() {
     export PATH=${GOROOT}/bin:$PATH
     cd golang/src; bash ./make.bash; cd ../..
   fi
-  export CGO_ENABLED=1
-  cd ${pkgname}/git2go; make install-static; cd ..
-  cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
   go version
-  go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/${pkgname}/v3/core/cautils.BuildNumber=v${pkgver}" -tags=static,gitenabled -o ${pkgname}
+  go build -mod=vendor -buildmode=pie -ldflags="-s -w -X github.com/kubescape/${pkgname}/v3/core/cautils.BuildNumber=v${pkgver}" -o ${pkgname}
 
 }
 

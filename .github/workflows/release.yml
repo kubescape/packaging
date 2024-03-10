@@ -104,7 +104,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y osc debhelper golang-golang-x-tools cmake
+          sudo apt install -y osc debhelper golang-golang-x-tools make
       - name: Setup GPG
         env:
           GPG: ${{ secrets.GPG }}
@@ -142,7 +142,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [lunar, kinetic, jammy, focal, bionic, xenial, mantic, nobel]
+        platform: [jammy, focal, bionic, xenial, mantic, noble]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -165,7 +165,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y debhelper dput golang-golang-x-tools cmake python3-paramiko
+          sudo apt install -y debhelper dput golang-golang-x-tools make python3-paramiko
           mv .dput.cf ~
       - name: Setup GPG
         env:

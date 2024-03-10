@@ -52,7 +52,7 @@ jobs:
       - name: Install Dependencies
         run: |
           ${{ env.DOCKER_CMD }} sudo apt update
-          ${{ env.DOCKER_CMD }} sudo apt install -y debhelper golang-golang-x-tools cmake
+          ${{ env.DOCKER_CMD }} sudo apt install -y debhelper golang-golang-x-tools make
       - name: Setup GPG
         env:
           GPG: ${{ secrets.GPG }}
@@ -104,11 +104,11 @@ jobs:
       - name: Start packaging environment in container
         run: |
           sudo apt update
-          sudo apt-get install -y binfmt-support qemu-user-static golang-golang-x-tools cmake
+          sudo apt-get install -y binfmt-support qemu-user-static golang-golang-x-tools make
           sudo docker run --platform linux/${{ matrix.platform }} -v ${PWD}:/work -w /work -d --name rpmbuild fedora sleep 21600
           DOCKER_CMD="sudo docker exec rpmbuild"
           ${DOCKER_CMD} dnf update -y
-          ${DOCKER_CMD} dnf install golang cmake rpmdevtools -y
+          ${DOCKER_CMD} dnf install golang make rpmdevtools -y
           echo "DOCKER_CMD=${DOCKER_CMD}" >> $GITHUB_ENV;
       - name: Build
         run: |

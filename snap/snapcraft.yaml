@@ -26,9 +26,6 @@ parts:
     plugin: nil
     override-build: |
       snap install go --classic --channel 1.21/stable
-    build-packages:
-      - cmake
-      - pkg-config
 
   kubescape-source:
     after: [build-deps]
@@ -39,45 +36,22 @@ parts:
       mkdir -p ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}
       mv -f * ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}
 
-  git2go-source:
-    after: [kubescape-source]
-    plugin: nil
-    source: https://github.com/libgit2/git2go/archive/v33.0.9/git2go-33.0.9.tar.gz
-    override-build: |
-      rm -rf ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}/git2go
-      mkdir -p ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}/git2go
-      mv -f * ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}/git2go
-
-  libgit2-source:
-    after: [git2go-source]
-    plugin: nil
-    source: https://github.com/libgit2/libgit2/archive/v1.3.0/libgit2-1.3.0.tar.gz
-    override-build: |
-      rm -rf ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}/git2go/libgit2
-      mkdir -p ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}/git2go/libgit2
-      mv -f * ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}/git2go/libgit2
-
   vendor:
-    after: [libgit2-source]
+    after: [kubescape-source]
     plugin: nil
     source: .
     override-build: |
       cd ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}
       go mod vendor; go generate -mod vendor ./...
-      cd git2go; go mod vendor; go generate -mod vendor ./... || true; mv libgit2 vendor
-      sed -i 's/go install /go install -mod vendor /' Makefile
-      cd ..; patch -p0 < ${SNAPCRAFT_PART_BUILD}/snap_homedir.patch
+      patch -p0 < ${SNAPCRAFT_PART_BUILD}/snap_homedir.patch
 
   build:
     after: [vendor]
     plugin: nil
     override-build: |
       cd ${SNAPCRAFT_STAGE}/${SNAPCRAFT_PROJECT_NAME}
-      export CGO_ENABLED=1
       export EXEC=${SNAPCRAFT_PART_INSTALL}/${SNAPCRAFT_PROJECT_NAME}
-      cd git2go; make install-static; cd ..
-      cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
-      go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/kubescape/v3/core/cautils.BuildNumber=v${SNAPCRAFT_PROJECT_VERSION}" -tags=static,gitenabled -o $EXEC
+      go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/kubescape/v3/core/cautils.BuildNumber=v${SNAPCRAFT_PROJECT_VERSION}" -o $EXEC
       if [ "$($EXEC version)" != "Your current version is: v${SNAPCRAFT_PROJECT_VERSION}" ]; then \
         exit 1; \
       fi

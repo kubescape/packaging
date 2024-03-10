@@ -7,14 +7,6 @@ ifndef VERSION
 	VERSION = $(shell cat deb/debian/control | grep Standards-Version | cut -d' ' -f2)
 endif
 
-ifndef GIT2GO_VERSION
-	GIT2GO_VERSION = $(shell cat kubescape_full.spec | grep "global git2go_version" | cut -d' ' -f3)
-endif
-
-ifndef LIBGIT2_VERSION
-	LIBGIT2_VERSION = $(shell cat kubescape_full.spec | grep "global libgit2_version" | cut -d' ' -f3)
-endif
-
 ifndef RPM_SPEC
 	RPM_SPEC = kubescape_full.spec
 endif
@@ -51,14 +43,8 @@ clean:
 prepare:
 	rm -rf $(path)/kubescape
 	curl --output kubescape.src.tar.gz -L https://github.com/kubescape/kubescape/archive/v$(VERSION)/kubescape-$(VERSION).tar.gz
-	curl --output git2go.src.tar.gz -L https://github.com/libgit2/git2go/archive/v$(GIT2GO_VERSION)/git2go-$(GIT2GO_VERSION).tar.gz
-	curl --output libgit2.src.tar.gz -L https://github.com/libgit2/libgit2/archive/v$(LIBGIT2_VERSION)/libgit2-$(LIBGIT2_VERSION).tar.gz
 	cd $(path); tar -xf ../kubescape.src.tar.gz
 	mv $(path)/kubescape-$(VERSION) $(path)/kubescape
-	cd $(path)/kubescape; tar -xf ../../git2go.src.tar.gz; \
-		rm -rf git2go; mv git2go-$(GIT2GO_VERSION) git2go
-	cd $(path)/kubescape/git2go; tar -xf ../../../libgit2.src.tar.gz; \
-		rm -rf libgit2; mv libgit2-$(LIBGIT2_VERSION) libgit2
 
 prepare-go-$(GOVERSION):
 	if [ "$(PACK_GO)" = "YES" ]; then \
@@ -69,8 +55,6 @@ prepare-go-$(GOVERSION):
 
 vendor: clean prepare prepare-go-$(GOVERSION)
 	cd $(path)/kubescape; go mod vendor; go generate -mod vendor ./...
-	cd $(path)/kubescape/git2go; go mod vendor; go generate -mod vendor ./...; mv libgit2 vendor
-	sed -i 's/go install /go install -mod vendor /' $(path)/kubescape/git2go/Makefile
 
 deb-ready:
 	cd $(path); dpkg-buildpackage -F -d;

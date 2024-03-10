@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
 
-export CGO_ENABLED=1
-
 ifndef GOCACHE
 	export GOCACHE=$(shell pwd)/cache
 endif
@@ -28,10 +26,8 @@ override_dh_auto_build:
 	if [ "$(BUILDGO)" = "1" ]; then \
 		cd golang/src && bash ./make.bash; \
 	fi
-	cd $(NAME)/git2go; make install-static PATH=$(PATH) GOROOT=$(GOROOT)
-	cp -r $(NAME)/git2go/static-build $(NAME)/vendor/github.com/libgit2/git2go/v*/
 	cd $(NAME); go version; \
-		go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v3/core/cautils.BuildNumber=v$(VERSION)" -tags=static,gitenabled -o $(NAME)
+		go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/$(NAME)/$(NAME)/v3/core/cautils.BuildNumber=v$(VERSION)" -o $(NAME)
 	dh_auto_build
 	if [ "$$($(KUBESCAPE) version)" != "Your current version is: v${VERSION}" ]; then \
 		exit 1; \

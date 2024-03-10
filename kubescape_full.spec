@@ -16,8 +16,6 @@
 #
 
 
-%global git2go_version 33.0.9
-%global libgit2_version 1.3.0
 Name:           kubescape
 Version:        3.0.4
 Release:        0
@@ -26,11 +24,7 @@ License:        Apache-2.0
 Group:          Development/Tools/Other
 URL:            https://github.com/kubescape/%{name}
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-Source1:        https://github.com/libgit2/git2go/archive/v%{git2go_version}/git2go-%{git2go_version}.tar.gz
-Source2:        https://github.com/libgit2/libgit2/archive/v%{libgit2_version}/libgit2-%{libgit2_version}.tar.gz
 BuildRequires:  golang >= 1.20
-BuildRequires:  pkg-config
-BuildRequires:  cmake
 
 %description
 An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters.
@@ -71,16 +65,10 @@ The official fish completion script for %{name}, generated during the build.
 
 %prep
 %setup -q -n %{name}-%{version}
-%setup -q -T -D -a 1
-%setup -q -T -D -a 2
-rm -rf git2go && mv git2go-%{git2go_version} git2go
-rm -rf git2go/vendor/libgit2 && mv libgit2-%{libgit2_version} git2go/vendor/libgit2
 
 %build
-export CGO_ENABLED=1
 export GOCACHE=${PWD}/../../../cache
-cd git2go; make install-static; cd ..
-go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v3/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+go build -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v3/core/cautils.BuildNumber=v%{version}" -o %{name}
 
 %install
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}

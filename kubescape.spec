@@ -16,8 +16,6 @@
 #
 
 
-%global git2go_version 33.0.9
-%global libgit2_version 1.3.0
 Name:           kubescape
 Version:        3.0.4
 Release:        0
@@ -27,8 +25,6 @@ Group:          Development/Tools/Other
 URL:            https://github.com/kubescape/%{name}
 Source0:        %{name}_%{version}.tar.xz
 BuildRequires:  golang
-BuildRequires:  pkg-config
-BuildRequires:  cmake
 
 %description
 An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters.
@@ -79,11 +75,9 @@ if [[ ${GOVERSION_MAJOR} -lt 1 || ${GOVERSION_MINOR} -lt 20 ]]; then
   export PATH=${GOROOT}/bin:$PATH
   cd golang/src; bash ./make.bash; cd ../..
 fi
-export CGO_ENABLED=1
-cd %{name}/git2go; make install-static; cd ..
-cp -r git2go/static-build vendor/github.com/libgit2/git2go/v*/
+cd %{name}
 go version
-go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v3/core/cautils.BuildNumber=v%{version}" -tags=static,gitenabled -o %{name}
+go build -mod=vendor -buildmode=pie -buildvcs=false -ldflags="-s -w -X github.com/kubescape/%{name}/v3/core/cautils.BuildNumber=v%{version}" -o %{name}
 
 %install
 install -Dpm 0755 %{name}/%{name} %{buildroot}%{_bindir}/%{name}
