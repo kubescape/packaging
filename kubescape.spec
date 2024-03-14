@@ -17,7 +17,7 @@
 
 
 Name:           kubescape
-Version:        3.0.5
+Version:        3.0.6
 Release:        0
 Summary:        CLI interface of a Kubernetes security platform
 License:        Apache-2.0
@@ -112,6 +112,9 @@ if [ "$(%{buildroot}%{_bindir}/%{name} version)" != "Your current version is: v%
 %{_datadir}/fish
 
 %changelog
+* Thu Mar 14 2024 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 3.0.6
+- Update to 3.0.6
+
 * Wed Mar 13 2024 Kubescape Maintainers <cncf-kubescape-maintainers@lists.cncf.io> - 3.0.5
 - Update to 3.0.5
 
