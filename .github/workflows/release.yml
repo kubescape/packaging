@@ -69,7 +69,7 @@ jobs:
           echo "version=v$VERSION" >> $GITHUB_ENV
           echo "release=$RELEASE" >> $GITHUB_ENV
       - name: Publish AUR package
-        uses: KSXGitHub/github-actions-deploy-aur@v2
+        uses: KSXGitHub/github-actions-deploy-aur@v3
         with:
           pkgname: kubescape
           pkgbuild: ./PKGBUILD
