@@ -150,7 +150,7 @@ jobs:
         with:
           path: .
       - name: Release
-        uses: softprops/action-gh-release@01570a1f39cb168c169c802c3bceb9e93fb10974
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
         env:
           latest: ${{ needs.release-checker.outputs.latest }}
           release: ${{ needs.release-checker.outputs.release }} 
