@@ -41,7 +41,7 @@ jobs:
           # else
               echo "TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV;
           # fi
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ env.TOKEN }}
       - name: Update repo
@@ -58,7 +58,7 @@ jobs:
     needs: [update, check-secret]
     if: needs.check-secret.outputs.SSH == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
           submodules: 'recursive'
@@ -83,7 +83,7 @@ jobs:
     needs: [update, check-secret]
     if: needs.check-secret.outputs.OSCRC == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
           submodules: 'recursive'
@@ -144,7 +144,7 @@ jobs:
       matrix:
         platform: [jammy, focal, bionic, xenial, mantic, noble]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
           submodules: 'recursive'
@@ -207,7 +207,7 @@ jobs:
   #     matrix:
   #       platform: [amd64]
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v5
   #       with:
   #         ref: ${{ github.ref }}
   #         submodules: 'recursive'
