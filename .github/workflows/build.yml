@@ -73,7 +73,7 @@ jobs:
           cp kubescape_*.tar.xz upload
           cp kubescape_*.deb upload
       - name: Upload Debian Package Files to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: kubescape_debian_${{ matrix.platform }}
           path: upload/*
@@ -117,7 +117,7 @@ jobs:
           mv kubescape_*.tar.xz rpmbuild/SOURCES
           ${{ env.DOCKER_CMD }} make rpm PWD=/work RPM_SPEC=kubescape.spec
       - name: Upload RPM Package File to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: kubescape_rpm_${{ matrix.platform }}
           path: rpmbuild/RPMS/*
